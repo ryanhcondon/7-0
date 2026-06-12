@@ -42,14 +42,21 @@ Ryan is on the Pro plan with real token limits and uses these two conventions:
 - [x] Phase 0 — project skeleton, roadmap, git init (2026-06-12)
 - [ ] Phase 1 — data pipeline (Python, in `pipeline/`)
   - [x] Launch set chosen by Ryan: **Secrets of Strixhaven (SOS)** (2026-06-12)
-  - [ ] Ryan downloading `draft_data_public.SOS.PremierDraft.csv.gz` (+ game data,
-        optional) manually into `data/raw/`
-  - [ ] Filter trophy drafts (event_match_wins==7, mythic/diamond rank), validate cleanliness
-  - [ ] Curation heuristic: prefer drafts with contested early picks (not 42 obvious picks)
-  - [ ] Scryfall bulk data join: image URIs, mana cost, rarity, color per card
-  - [ ] Compute reveal stats offline (pick popularity / avg pick position per card)
-  - [ ] Emit static JSON: `web/public/puzzles/YYYY-MM-DD.json` + per-set card catalog
-  - [ ] CHECKPOINT: show Ryan 2-3 raw puzzles, sanity-check they're fun
+  - [x] Ryan downloaded draft + game data into `data/raw/` (2026-06-12; arrived as
+        `.csv.gz.csv` — still gzipped, renamed to `.csv.gz`)
+  - [x] Filter trophy drafts (`pipeline/filter_trophies.py`): 4.5M rows -> 113,903
+        trophy rows = 2,711 complete mythic/diamond 7-win drafts, all 42 picks clean
+  - [x] Curation heuristic (`pipeline/build_puzzles.py`): contested early picks
+        (ATA gap < 1.25 between top 2 in pack) + bonus for off-community-favorite picks
+  - [x] Scryfall join (`pipeline/fetch_cards.py`): 346 cards (271 in-set via search +
+        75 bonus-sheet reprints via bulk oracle-cards file — per-name API 429s)
+  - [x] Reveal stats: per-card ATA (within-pack 1-14 scale) + pick-rate-when-seen
+        over ALL ranks, in same pass as trophy filter
+  - [x] Emit static JSON: 60 puzzles `web/public/puzzles/YYYY-MM-DD.json` (from
+        2026-06-12) + `manifest.json` + `web/public/cards.SOS.json` catalog
+  - [ ] CHECKPOINT: 3 puzzle previews shown to Ryan 2026-06-12 — awaiting his
+        fun-check verdict (pipeline itself is done; re-run `build_puzzles.py` if
+        curation knobs CONTESTED_GAP/EARLY_PICK_MAX need tuning)
 - [ ] Phase 2 — playable game, local (in `web/`)
   - [ ] `brew install node` (Node/npm NOT yet installed on this machine)
   - [ ] Vite + React static SPA; core loop: show pack → user picks → feedback → next
@@ -103,3 +110,12 @@ Open (Ryan to decide, defaults in parens):
 
 - 2026-06-12: Phase 0. Skeleton + roadmap created. Plan and product design agreed
   in conversation (see also memory). Next: Phase 1 data pipeline.
+- 2026-06-12 (session 2): Phase 1 pipeline complete. Gotchas hit: (1) downloads
+  arrive still-gzipped despite browser appending .csv — just rename; (2) Scryfall
+  429s per-name lookups even at ~8/s — use bulk oracle-cards file (cached in
+  data/raw/) for the 75 bonus-sheet reprints; (3) ATA must be within-pack scale
+  (pick_number+1, 1-14), NOT overall 1-42, or bombs average ~15 and curation is
+  garbage — caught this because "best card in set" had ATA 15. Puzzle JSON shape:
+  {set,id,rank,record,date,picks:[{pack,pick,cards[],picked,maindecked}],deck[]};
+  catalog cards.SOS.json: name->{img,cost,type,rarity,colors,ata,prw}. Awaiting
+  Ryan's fun-check on 3 previews, then Phase 2 (needs `brew install node` first).

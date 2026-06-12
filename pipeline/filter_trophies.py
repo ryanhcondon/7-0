@@ -45,9 +45,11 @@ def main():
         seen += chunk[pack_cols].to_numpy().sum(axis=0)
         counts = chunk["pick"].value_counts()
         picked = picked.add(counts, fill_value=0)
-        # overall pick position 1-42, more intuitive than (pack, pick) pairs
-        overall_pos = chunk["pack_number"] * 14 + chunk["pick_number"] + 1
-        pick_pos_sum = pick_pos_sum.add(overall_pos.groupby(chunk["pick"]).sum(), fill_value=0)
+        # within-pack position 1-14 (the standard 17lands ATA scale; an overall
+        # 1-42 scale would squash bombs toward 15 since they're also first-picked
+        # out of packs 2 and 3)
+        pos = chunk["pick_number"] + 1
+        pick_pos_sum = pick_pos_sum.add(pos.groupby(chunk["pick"]).sum(), fill_value=0)
 
         trophies = chunk[
             (chunk["event_match_wins"] == 7) & (chunk["rank"].isin(TROPHY_RANKS))
