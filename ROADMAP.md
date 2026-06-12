@@ -17,6 +17,26 @@ Claude builds essentially everything; Ryan sets high-level direction and playtes
 4. Before the session ends (or when context is getting long), update this file:
    check off items, note any new decisions/gotchas in the log at the bottom.
 
+## Session protocol (instructions for Claude — Ryan relies on these)
+
+Ryan is on the Pro plan with real token limits and uses these two conventions:
+
+- **Checkpoint announcements:** every time you finish a coherent chunk (a phase,
+  sub-chunk, or any state worth keeping), commit it, update this file, and END your
+  message with an explicit, unmissable marker, e.g.:
+  "✅ Checkpoint: <what now works>. Committed and roadmap updated — clean stopping
+  point. Next up: <next item>."
+  Never leave a chunk finished-but-unannounced, and never announce a checkpoint
+  without having actually committed + updated the roadmap first.
+
+- **"wrap up" is a command.** When Ryan says "wrap up" (in any phrasing), immediately
+  stop adding features or starting new work. Then: (1) get the code to the nearest
+  safe state (working > complete — comment out or stash half-done pieces rather than
+  leaving the build broken), (2) commit, (3) update this file's status board AND
+  session log with the exact stopping point, including mid-phase detail like
+  "downloader works; trophy filter written but untested", (4) reply with a short
+  summary of what's saved and the precise first action for next session.
+
 ## Status board
 
 - [x] Phase 0 — project skeleton, roadmap, git init (2026-06-12)
