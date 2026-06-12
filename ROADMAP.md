@@ -40,7 +40,7 @@ Ryan is on the Pro plan with real token limits and uses these two conventions:
 ## Status board
 
 - [x] Phase 0 — project skeleton, roadmap, git init (2026-06-12)
-- [ ] Phase 1 — data pipeline (Python, in `pipeline/`)
+- [x] Phase 1 — data pipeline (Python, in `pipeline/`) (2026-06-12)
   - [x] Launch set chosen by Ryan: **Secrets of Strixhaven (SOS)** (2026-06-12)
   - [x] Ryan downloaded draft + game data into `data/raw/` (2026-06-12; arrived as
         `.csv.gz.csv` — still gzipped, renamed to `.csv.gz`)
@@ -54,11 +54,12 @@ Ryan is on the Pro plan with real token limits and uses these two conventions:
         over ALL ranks, in same pass as trophy filter
   - [x] Emit static JSON: 60 puzzles `web/public/puzzles/YYYY-MM-DD.json` (from
         2026-06-12) + `manifest.json` + `web/public/cards.SOS.json` catalog
-  - [ ] CHECKPOINT: awaiting Ryan's fun-check verdict (pipeline itself is done;
-        re-run `build_puzzles.py` if curation knobs CONTESTED_GAP/EARLY_PICK_MAX
-        need tuning). Playable checker: `web/public/preview.html` — serve via
-        launch config "puzzle-preview" (python http.server :8642), throwaway,
-        replaced by real game in Phase 2.
+  - [x] CHECKPOINT: Ryan playtested via `web/public/preview.html` and approved —
+        "drafts seem suitably interesting" (2026-06-12). Curation knobs
+        (CONTESTED_GAP/EARLY_PICK_MAX in build_puzzles.py) can be retuned anytime,
+        rebuild takes seconds. Preview page is throwaway; serve via launch config
+        "puzzle-preview" (python http.server :8642). NOTE: page worked in browser
+        but not the IDE preview panel for Ryan — unresolved, don't burn time on it.
 - [ ] Phase 2 — playable game, local (in `web/`)
   - [ ] `brew install node` (Node/npm NOT yet installed on this machine)
   - [ ] Vite + React static SPA; core loop: show pack → user picks → feedback → next
@@ -119,5 +120,7 @@ Open (Ryan to decide, defaults in parens):
   (pick_number+1, 1-14), NOT overall 1-42, or bombs average ~15 and curation is
   garbage — caught this because "best card in set" had ATA 15. Puzzle JSON shape:
   {set,id,rank,record,date,picks:[{pack,pick,cards[],picked,maindecked}],deck[]};
-  catalog cards.SOS.json: name->{img,cost,type,rarity,colors,ata,prw}. Awaiting
-  Ryan's fun-check on 3 previews, then Phase 2 (needs `brew install node` first).
+  catalog cards.SOS.json: name->{img,cost,type,rarity,colors,ata,prw}. Built
+  throwaway preview.html checker; Ryan playtested and APPROVED Phase 1 (fun-check
+  passed, curation heuristic endorsed as v1). Phase 1 complete. Next session:
+  Phase 2 — start with `brew install node`, then Vite+React SPA in web/.
