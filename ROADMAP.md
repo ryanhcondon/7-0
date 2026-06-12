@@ -41,8 +41,9 @@ Ryan is on the Pro plan with real token limits and uses these two conventions:
 
 - [x] Phase 0 — project skeleton, roadmap, git init (2026-06-12)
 - [ ] Phase 1 — data pipeline (Python, in `pipeline/`)
-  - [ ] Check 17lands public_datasets page; propose launch set to Ryan
-  - [ ] Download `draft_data_public.{SET}.PremierDraft.csv.gz`
+  - [x] Launch set chosen by Ryan: **Secrets of Strixhaven (SOS)** (2026-06-12)
+  - [ ] Ryan downloading `draft_data_public.SOS.PremierDraft.csv.gz` (+ game data,
+        optional) manually into `data/raw/`
   - [ ] Filter trophy drafts (event_match_wins==7, mythic/diamond rank), validate cleanliness
   - [ ] Curation heuristic: prefer drafts with contested early picks (not 42 obvious picks)
   - [ ] Scryfall bulk data join: image URIs, mana cost, rarity, color per card
@@ -75,7 +76,6 @@ Made:
 - Stack: Python pipeline → static JSON → React+Vite SPA.
 
 Open (Ryan to decide, defaults in parens):
-- Launch set (default: newest premier set with deep data on 17lands)
 - Scoring: pure match vs partial credit for defensible picks (default: partial credit
   via community pick rates)
 - Final name (candidates: Seven Oh, Trophy Pick, The Wheel, P1P1 Daily) — blocks only
