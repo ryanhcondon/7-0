@@ -67,6 +67,13 @@ Ryan is on the Pro plan with real token limits and uses these two conventions:
   - [x] Scoring + end screen (their deck, their record, your agreement %) (2026-06-12;
         partial credit via prw ratio, knobs in `web/src/scoring.js`; end screen has
         42-cell green/yellow/red strip = precursor to Phase 3 share grid)
+  - [x] Ryan feedback round 1 (2026-06-12): expandable "Your pool" (cards you
+        clicked, collapsed by default, under "Their pool") + restructure to
+        "yesterday's trophies": each play date = top N_PER_DAY=3 drafts from the
+        previous calendar day. Manifest is now {"days": {date: [ids]}}, puzzle
+        files keyed by id. Data covers drafts 2026-04-21..06-02 → play dates
+        2026-04-22..06-03; app defaults to latest day ≤ today. Phase-1
+        preview.html deleted (incompatible with new manifest, was throwaway).
   - [ ] CHECKPOINT: Ryan playtests at localhost
 - [ ] Phase 3 — daily-game wrapper
   - [ ] Date-seeded daily puzzle, archive of past days
@@ -75,6 +82,9 @@ Ryan is on the Pro plan with real token limits and uses these two conventions:
 - [ ] Phase 4 — deploy (the only phase needing Ryan's hands)
   - [ ] `brew install gh`, `gh auth login` as ryanhcondon
   - [ ] Create GitHub repo, push, GitHub Actions build → GitHub Pages
+  - [ ] Scheduled rebuild (Actions cron): re-download 17lands data, re-run
+        pipeline, redeploy — required for "yesterday's trophies" to stay
+        current once live (check 17lands dataset refresh cadence first)
   - [ ] Live at ryanhcondon.github.io/<repo>; custom domain optional later
 - [ ] Phase 5 (v2, after feedback) — upload-your-own-draft mode, beat-the-bot,
       multi-set, live community pick stats (needs tiny backend)
@@ -83,6 +93,9 @@ Ryan is on the Pro plan with real token limits and uses these two conventions:
 
 Made:
 - Fully static site, zero backend for v1. All stats precomputed offline.
+- Daily structure (Ryan, 2026-06-12): a few puzzles per day (3), specifically
+  trophy drafts from the previous calendar day — not one evergreen puzzle/day.
+  Consequence: production needs a scheduled data-refresh + rebuild (Phase 4).
 - Scoring v1 partial credit uses context-blind prw (avg pick rate when seen).
   Ryan: acknowledged weak by mid-draft where picks are highly contextual, but
   "works for now". Upgrade paths, in order of preference: (a) Phase 5 live
@@ -143,3 +156,13 @@ Open (Ryan to decide, defaults in parens):
   pct of max. Launch config "game-dev" runs the dev server on :5173 (npm run
   dev --prefix web). web/dist/ gitignored. AWAITING: Ryan's localhost playtest
   (the Phase 2 checkpoint) — then Phase 3.
+- 2026-06-12 (session 3, cont.): Ryan playtested, liked it, two changes: (1)
+  expandable "Your pool" added to Game.jsx (<details>, collapsed by default);
+  (2) "yesterday's trophies" restructure — build_puzzles.py now groups drafts
+  by draft_time date, emits top-3 per day as puzzles/<id>.json dated +1 day,
+  manifest {"days": {date: [ids]}}; App.jsx gained puzzle tabs + defaults to
+  latest day ≤ today. 123 puzzles / 41 days. Machine-verified: tabs load 3
+  distinct drafts, fresh load = Pick 1 0/0, both pools render, build clean,
+  no console errors. Gotcha: when eval-testing tabs, re-query buttons after
+  every click — header remounts during puzzle load, stale nodes no-op.
+  Still AWAITING Ryan playtest checkpoint, then Phase 3.

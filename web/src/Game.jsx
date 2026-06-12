@@ -35,7 +35,7 @@ export default function Game({ puzzle, cards }) {
     <div className="game">
       <div className="statusbar">
         <span className="pp">Pack {p.pack + 1} · Pick {p.pick + 1}</span>
-        <span className="meta">{puzzle.rank} player · went {puzzle.record}</span>
+        <span className="meta">{puzzle.rank} player · went {puzzle.record} · drafted {puzzle.drafted}</span>
         <span className="score">
           {matches}/{answered} matched · score {totalScore(results.map(r => r.points), answered || 1)}
         </span>
@@ -84,6 +84,17 @@ export default function Game({ puzzle, cards }) {
             ))}
           </div>
         </div>
+      )}
+
+      {results.length > 0 && (
+        <details className="pool your-pool">
+          <summary>Your pool ({results.length}) — the cards you clicked</summary>
+          <div className="pool-cards">
+            {results.map((r, idx) => (
+              <img key={idx} src={cards[r.your]?.img} alt={r.your} title={r.your} loading="lazy" />
+            ))}
+          </div>
+        </details>
       )}
     </div>
   )

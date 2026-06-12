@@ -20,8 +20,12 @@ body {
 
 .app { max-width: 1100px; margin: 0 auto; padding: 12px 16px 48px; }
 
-.topbar { display: flex; align-items: baseline; gap: 16px; }
+.topbar { display: flex; align-items: baseline; gap: 16px; flex-wrap: wrap; }
 .topbar h1 { font-size: 1.3em; margin: 8px 0; }
+
+.puzzle-tabs { display: inline-flex; gap: 6px; }
+.tab { padding: 5px 10px; font-size: .9em; }
+.tab.active { background: #2d4f8a; border-color: #3a64ad; }
 
 select, button {
   font-size: 1em; padding: 6px 12px; border-radius: 6px;
@@ -58,6 +62,8 @@ button.next:hover { background: #3a64ad; }
 
 .pool { margin-top: 22px; border-top: 1px solid var(--border); padding-top: 10px; }
 .pool-label { color: var(--muted); font-size: .9em; margin-bottom: 6px; }
+.your-pool summary { color: var(--muted); font-size: .9em; cursor: pointer; margin-bottom: 6px; }
+.your-pool summary:hover { color: var(--text); }
 .pool-cards { display: flex; flex-wrap: wrap; gap: 4px; }
 .pool-cards img { width: 62px; border-radius: 3px; }
 

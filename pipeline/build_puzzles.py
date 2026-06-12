@@ -3,8 +3,13 @@
 Inputs:  data/trophy_drafts.{SET}.csv.gz, data/card_stats.{SET}.csv,
          data/scryfall_cards.{SET}.json
 Outputs: web/public/cards.{SET}.json          - card catalog (image, cost, stats)
-         web/public/puzzles/YYYY-MM-DD.json   - one puzzle per day
-         web/public/puzzles/manifest.json     - available dates
+         web/public/puzzles/<id>.json         - one puzzle per trophy draft
+         web/public/puzzles/manifest.json     - {"days": {play_date: [ids]}}
+
+Each play date offers the top N_PER_DAY most interesting trophy drafts from the
+previous calendar day (puzzles are "yesterday's trophies"). With a static data
+dump the last playable date is <last draft date>+1; a scheduled re-download +
+rebuild (Phase 4) keeps dates current in production.
 
 Curation: a pick is "contested" when the top two community choices in the pack
 are close (avg-taken-at gap below CONTESTED_GAP). Drafts score by contested
@@ -27,8 +32,7 @@ WEB_PUB = ROOT / "web" / "public"
 
 CONTESTED_GAP = 1.25   # ATA gap below which a pick counts as contested
 EARLY_PICK_MAX = 5     # pick_number <= this counts as "early" (first 6 of each pack)
-NUM_PUZZLES = 60
-START_DATE = date(2026, 6, 12)
+N_PER_DAY = 3          # puzzles published per play date (top-scored from prior day)
 
 
 def build_catalog():
@@ -104,6 +108,7 @@ def score_and_build(df, pack_cols, catalog):
             "id": hashlib.sha1(draft_id.encode()).hexdigest()[:10],
             "rank": first["rank"],
             "record": f"7-{int(first['event_match_losses'])}",
+            "drafted": str(first["draft_time"])[:10],
             "picks": picks,
             "deck": sorted(p["picked"] for p in picks if p["maindecked"]),
         }
@@ -122,16 +127,30 @@ def main():
     print(f"interest scores: max={scores[0]:.1f} median={scores[len(scores)//2]:.1f} min={scores[-1]:.1f}")
 
     (WEB_PUB / "puzzles").mkdir(parents=True, exist_ok=True)
+    for stale in (WEB_PUB / "puzzles").glob("*.json"):
+        stale.unlink()
     (WEB_PUB / f"cards.{SET_CODE}.json").write_text(json.dumps(catalog))
 
-    dates = []
-    for i, (score, puzzle) in enumerate(results[:NUM_PUZZLES]):
-        d = (START_DATE + timedelta(days=i)).isoformat()
-        puzzle["date"] = d
-        (WEB_PUB / "puzzles" / f"{d}.json").write_text(json.dumps(puzzle))
-        dates.append(d)
-    (WEB_PUB / "puzzles" / "manifest.json").write_text(json.dumps({"set": SET_CODE, "dates": dates}))
-    print(f"wrote {len(dates)} puzzles ({dates[0]} .. {dates[-1]}) + catalog ({len(catalog)} cards)")
+    by_day = {}
+    for score, puzzle in results:
+        by_day.setdefault(puzzle["drafted"], []).append((score, puzzle))
+
+    days = {}
+    n_puzzles = 0
+    for drafted in sorted(by_day):
+        top = sorted(by_day[drafted], key=lambda t: -t[0])[:N_PER_DAY]
+        play_date = (date.fromisoformat(drafted) + timedelta(days=1)).isoformat()
+        ids = []
+        for score, puzzle in top:
+            puzzle["date"] = play_date
+            (WEB_PUB / "puzzles" / f"{puzzle['id']}.json").write_text(json.dumps(puzzle))
+            ids.append(puzzle["id"])
+            n_puzzles += 1
+        days[play_date] = ids
+    (WEB_PUB / "puzzles" / "manifest.json").write_text(json.dumps({"set": SET_CODE, "days": days}))
+    dates = sorted(days)
+    print(f"wrote {n_puzzles} puzzles over {len(dates)} days ({dates[0]} .. {dates[-1]}) "
+          f"+ catalog ({len(catalog)} cards)")
 
 
 if __name__ == "__main__":
