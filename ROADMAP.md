@@ -61,9 +61,12 @@ Ryan is on the Pro plan with real token limits and uses these two conventions:
         "puzzle-preview" (python http.server :8642). NOTE: page worked in browser
         but not the IDE preview panel for Ryan — unresolved, don't burn time on it.
 - [ ] Phase 2 — playable game, local (in `web/`)
-  - [ ] `brew install node` (Node/npm NOT yet installed on this machine)
-  - [ ] Vite + React static SPA; core loop: show pack → user picks → feedback → next
-  - [ ] Scoring + end screen (their deck, their record, your agreement %)
+  - [x] `brew install node` → node v26.3.0 / npm 11.16.0 (2026-06-12)
+  - [x] Vite + React static SPA; core loop: show pack → user picks → feedback → next
+        (2026-06-12; plain JSX, no TS; `npm run dev` in web/, or launch config "game-dev")
+  - [x] Scoring + end screen (their deck, their record, your agreement %) (2026-06-12;
+        partial credit via prw ratio, knobs in `web/src/scoring.js`; end screen has
+        42-cell green/yellow/red strip = precursor to Phase 3 share grid)
   - [ ] CHECKPOINT: Ryan playtests at localhost
 - [ ] Phase 3 — daily-game wrapper
   - [ ] Date-seeded daily puzzle, archive of past days
@@ -124,3 +127,12 @@ Open (Ryan to decide, defaults in parens):
   throwaway preview.html checker; Ryan playtested and APPROVED Phase 1 (fun-check
   passed, curation heuristic endorsed as v1). Phase 1 complete. Next session:
   Phase 2 — start with `brew install node`, then Vite+React SPA in web/.
+- 2026-06-12 (session 3): Phase 2 built and machine-verified end to end (clicked
+  through a full 42-pick draft via browser automation: reveal states, partial
+  credit, pool strip, end screen all work; zero console errors). Node installed
+  via brew. App structure: web/src/{App,Game,EndScreen}.jsx + scoring.js +
+  styles.css; date dropdown in header is a playtest aid, Phase 3 replaces it.
+  Scoring v1: match=1pt, miss=0.5×min(1, prw_you/prw_them); headline score is
+  pct of max. Launch config "game-dev" runs the dev server on :5173 (npm run
+  dev --prefix web). web/dist/ gitignored. AWAITING: Ryan's localhost playtest
+  (the Phase 2 checkpoint) — then Phase 3.
