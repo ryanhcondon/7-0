@@ -83,6 +83,13 @@ Ryan is on the Pro plan with real token limits and uses these two conventions:
 
 Made:
 - Fully static site, zero backend for v1. All stats precomputed offline.
+- Scoring v1 partial credit uses context-blind prw (avg pick rate when seen).
+  Ryan: acknowledged weak by mid-draft where picks are highly contextual, but
+  "works for now". Upgrade paths, in order of preference: (a) Phase 5 live
+  community pick rates *for this exact pack/pool* once the game has traffic;
+  (b) before that, the ../17lands BC pick-predictor model could provide
+  context-aware "what would a typical player pick here" credit, precomputed
+  offline per puzzle (stays static, no backend).
 - Hosting: GitHub Pages on Ryan's account (ryanhcondon). No Cloudflare/Vercel —
   one less account; static Pages is sufficient.
 - Local-first: phases 1-3 run/playtest entirely on Ryan's machine.
