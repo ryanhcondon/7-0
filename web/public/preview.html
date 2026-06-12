@@ -100,11 +100,16 @@ document.getElementById('next').onclick = () => { i++; showPick(); };
 document.getElementById('dates').onchange = e => loadPuzzle(e.target.value);
 
 (async () => {
-  cards = await (await fetch('cards.SOS.json')).json();
-  const manifest = await (await fetch('puzzles/manifest.json')).json();
-  const sel = document.getElementById('dates');
-  sel.innerHTML = manifest.dates.map(d => `<option>${d}</option>`).join('');
-  loadPuzzle(manifest.dates[0]);
+  try {
+    cards = await (await fetch('cards.SOS.json')).json();
+    const manifest = await (await fetch('puzzles/manifest.json')).json();
+    const sel = document.getElementById('dates');
+    sel.innerHTML = manifest.dates.map(d => `<option>${d}</option>`).join('');
+    loadPuzzle(manifest.dates[0]);
+  } catch (e) {
+    document.getElementById('banner').textContent =
+      `⚠️ Couldn't load puzzle data (${e.message}). Is the server running? Try refreshing.`;
+  }
 })();
 </script>
 </body>
