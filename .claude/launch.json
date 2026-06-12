@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "puzzle-preview",
+      "runtimeExecutable": "/opt/anaconda3/bin/python",
+      "runtimeArgs": ["-m", "http.server", "8642", "--directory", "web/public"],
+      "port": 8642
+    }
+  ]
+}

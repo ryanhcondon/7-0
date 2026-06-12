@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<!-- Throwaway Phase-1 puzzle checker. The real game (Phase 2) replaces this.
+     Serve from web/public: python3 -m http.server, open /preview.html -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Trophy Pick — puzzle preview</title>
+<style>
+  body { font-family: -apple-system, sans-serif; background: #1a1d24; color: #e8e8e8;
+         max-width: 1100px; margin: 0 auto; padding: 16px; }
+  h1 { font-size: 1.2em; } .muted { color: #9aa0ae; }
+  select, button { font-size: 1em; padding: 6px 10px; border-radius: 6px;
+         border: 1px solid #444; background: #2a2e38; color: #e8e8e8; cursor: pointer; }
+  #pack { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+  .card { width: 146px; cursor: pointer; position: relative; border-radius: 7px; }
+  .card img { width: 100%; border-radius: 7px; display: block; }
+  .card .stat { font-size: .75em; text-align: center; color: #9aa0ae; visibility: hidden; }
+  .revealed .stat { visibility: visible; }
+  .revealed .card { cursor: default; }
+  .their { outline: 4px solid #3fb950; } .yours-wrong { outline: 4px solid #f85149; }
+  .dim { opacity: .45; }
+  #banner { margin: 12px 0; font-size: 1.05em; min-height: 1.4em; }
+  #deck { columns: 3; font-size: .9em; }
+</style>
+</head>
+<body>
+<h1>Trophy Pick — raw puzzle preview <span class="muted">(throwaway checker, not the game)</span></h1>
+<div>
+  <select id="dates"></select>
+  <span id="meta" class="muted"></span>
+  <span id="score" style="float:right"></span>
+</div>
+<div id="banner">Click the card you think they picked.</div>
+<div id="pack"></div>
+<button id="next" style="display:none; margin-top:12px">Next pick →</button>
+<div id="end" style="display:none"><h2 id="endtitle"></h2><div id="deck"></div></div>
+
+<script>
+let cards, puzzle, i = 0, hits = 0;
+
+async function loadPuzzle(date) {
+  puzzle = await (await fetch(`puzzles/${date}.json`)).json();
+  i = 0; hits = 0;
+  document.getElementById('meta').textContent =
+    ` ${puzzle.rank} player, went ${puzzle.record}`;
+  document.getElementById('end').style.display = 'none';
+  showPick();
+}
+
+function showPick() {
+  const p = puzzle.picks[i];
+  const pack = document.getElementById('pack');
+  pack.className = '';
+  pack.innerHTML = '';
+  document.getElementById('banner').textContent =
+    `Pack ${p.pack + 1}, Pick ${p.pick + 1} — click the card you think they picked.`;
+  document.getElementById('score').textContent = `agreement: ${hits}/${i}`;
+  document.getElementById('next').style.display = 'none';
+  p.cards.forEach(name => {
+    const c = cards[name];
+    const div = document.createElement('div');
+    div.className = 'card';
+    div.innerHTML = `<img src="${c.img}" alt="${name}" title="${name}">
+      <div class="stat">avg pick ${c.ata ?? '?'} · taken ${Math.round((c.prw ?? 0) * 100)}%</div>`;
+    div.onclick = () => guess(div, name, p);
+    pack.appendChild(div);
+  });
+}
+
+function guess(div, name, p) {
+  const pack = document.getElementById('pack');
+  if (pack.classList.contains('revealed')) return;
+  pack.classList.add('revealed');
+  const right = name === p.picked;
+  if (right) hits++;
+  let markedTheirs = false;
+  for (const el of pack.children) {
+    const elName = el.querySelector('img').alt;
+    if (elName === p.picked && !markedTheirs) { el.classList.add('their'); markedTheirs = true; }
+    else if (el === div && !right) el.classList.add('yours-wrong');
+    else if (el !== div) el.classList.add('dim');
+  }
+  document.getElementById('banner').textContent = right
+    ? `✅ Match! They took ${p.picked}.`
+    : `❌ You took ${name}; they took ${p.picked}.`;
+  document.getElementById('score').textContent = `agreement: ${hits}/${i + 1}`;
+  document.getElementById('next').style.display = i + 1 < puzzle.picks.length ? '' : 'none';
+  if (i + 1 === puzzle.picks.length) finish();
+}
+
+function finish() {
+  document.getElementById('end').style.display = '';
+  document.getElementById('endtitle').textContent =
+    `Done — you agreed on ${hits}/42. Their ${puzzle.record} maindeck:`;
+  document.getElementById('deck').innerHTML =
+    puzzle.deck.map(n => `<div>${n}</div>`).join('');
+}
+
+document.getElementById('next').onclick = () => { i++; showPick(); };
+document.getElementById('dates').onchange = e => loadPuzzle(e.target.value);
+
+(async () => {
+  cards = await (await fetch('cards.SOS.json')).json();
+  const manifest = await (await fetch('puzzles/manifest.json')).json();
+  const sel = document.getElementById('dates');
+  sel.innerHTML = manifest.dates.map(d => `<option>${d}</option>`).join('');
+  loadPuzzle(manifest.dates[0]);
+})();
+</script>
+</body>
+</html>
