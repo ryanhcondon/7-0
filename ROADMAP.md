@@ -54,9 +54,11 @@ Ryan is on the Pro plan with real token limits and uses these two conventions:
         over ALL ranks, in same pass as trophy filter
   - [x] Emit static JSON: 60 puzzles `web/public/puzzles/YYYY-MM-DD.json` (from
         2026-06-12) + `manifest.json` + `web/public/cards.SOS.json` catalog
-  - [ ] CHECKPOINT: 3 puzzle previews shown to Ryan 2026-06-12 — awaiting his
-        fun-check verdict (pipeline itself is done; re-run `build_puzzles.py` if
-        curation knobs CONTESTED_GAP/EARLY_PICK_MAX need tuning)
+  - [ ] CHECKPOINT: awaiting Ryan's fun-check verdict (pipeline itself is done;
+        re-run `build_puzzles.py` if curation knobs CONTESTED_GAP/EARLY_PICK_MAX
+        need tuning). Playable checker: `web/public/preview.html` — serve via
+        launch config "puzzle-preview" (python http.server :8642), throwaway,
+        replaced by real game in Phase 2.
 - [ ] Phase 2 — playable game, local (in `web/`)
   - [ ] `brew install node` (Node/npm NOT yet installed on this machine)
   - [ ] Vite + React static SPA; core loop: show pack → user picks → feedback → next
