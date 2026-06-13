@@ -109,8 +109,11 @@ Ryan is on the Pro plan with real token limits and uses these two conventions:
         deeper polish deferred per Ryan (iterate after deploy)
   - [ ] CHECKPOINT: Ryan playtests the daily wrapper
 - [ ] Phase 4 — deploy (the only phase needing Ryan's hands)
+  - [x] GitHub Actions workflow prepped (.github/workflows/deploy.yml: build
+        web/ on push to main, deploy to Pages; vite base './' already set)
   - [ ] `brew install gh`, `gh auth login` as ryanhcondon
-  - [ ] Create GitHub repo, push, GitHub Actions build → GitHub Pages
+  - [ ] Create GitHub repo (needs final name decision!), push, enable Pages
+        with "GitHub Actions" as source
   - [ ] (dropped 2026-06-12: scheduled data-refresh rebuild — not needed now
         that play dates are evergreen-mapped; revisit if v2 does live
         "yesterday's trophies" via 17lands trophy-page scrape)
