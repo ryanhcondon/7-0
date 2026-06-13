@@ -108,17 +108,18 @@ Ryan is on the Pro plan with real token limits and uses these two conventions:
   - [x] Mobile check at 375px: header wraps, stats stack, piles 2-up — usable;
         deeper polish deferred per Ryan (iterate after deploy)
   - [ ] CHECKPOINT: Ryan playtests the daily wrapper
-- [ ] Phase 4 — deploy (the only phase needing Ryan's hands)
-  - [x] GitHub Actions workflow prepped (.github/workflows/deploy.yml: build
-        web/ on push to main, deploy to Pages; vite base './' already set)
-  - [x] Auth sorted (2026-06-12): NO gh CLI, and the keychain HTTPS token
-        (ghp_, ryanhcondon) is EXPIRED → 401. But SSH key ~/.ssh/id_rsa
-        authenticates fine ("Hi ryanhcondon!"). Use SSH remotes. gh not needed.
-  - [ ] Ryan: create empty repo named "7-0" at github.com/new (no README/
-        .gitignore — we already have history). Then Claude: git remote add
-        origin git@github.com:ryanhcondon/7-0.git && git push -u origin main.
-  - [ ] Ryan: enable Pages — repo Settings → Pages → Source = "GitHub Actions"
-        (the deploy.yml workflow handles the rest on push).
+- [x] Phase 4 — deploy. LIVE at https://ryanhcondon.github.io/7-0/ (2026-06-12)
+  - [x] GitHub Actions workflow (.github/workflows/deploy.yml: build web/ on
+        push to main, deploy to Pages; vite base './' confirmed working under
+        the /7-0/ subpath)
+  - [x] Auth: NO gh CLI; keychain HTTPS token (ghp_) EXPIRED → 401; SSH key
+        ~/.ssh/id_rsa works. Used SSH remote git@github.com:ryanhcondon/7-0.git.
+  - [x] Repo ryanhcondon/7-0 created by Ryan (browser), pushed over SSH.
+  - [x] Pages source = "GitHub Actions". GOTCHA: first deploy 404'd ("Failed
+        to create deployment... Ensure GitHub Pages has been enabled") because
+        the build job ran before Pages source was toggled; fixed by setting
+        source then "Re-run failed jobs" — no new commit needed.
+  - [x] Verified live: index, JS bundle, manifest.json, cards.SOS.json all 200.
   - [ ] (dropped 2026-06-12: scheduled data-refresh rebuild — not needed now
         that play dates are evergreen-mapped; revisit if v2 does live
         "yesterday's trophies" via 17lands trophy-page scrape)
@@ -231,3 +232,15 @@ Open: none blocking. (v2 ideas tracked in Phase 5.)
   next-puzzle flow, archive/about nav, share text format, mobile 375px,
   clean build, no console errors. Next: Ryan playtests, then Phase 4 deploy
   (needs Ryan: brew install gh, gh auth login, repo create).
+- 2026-06-12 (session 3, cont. 4): Named the project 7-0 (in-app + repo).
+  Auth: gh not installed, keychain HTTPS token dead (401), but SSH key works —
+  see [[github-auth]] memory. Deployed via GitHub Actions to Pages. First
+  deploy 404'd (Pages source not yet "GitHub Actions"); toggled source +
+  re-ran failed jobs → green. LIVE: https://ryanhcondon.github.io/7-0/,
+  verified serving (index/JS/data all 200). FULL PIPELINE DONE end-to-end:
+  17lands data → Python pipeline → static JSON → React/Vite SPA → daily
+  wrapper → auto-deploy on push. Next: iterate on presentation/game tweaks
+  (Ryan has a list); every commit to main now auto-deploys. Phase 5 = v2
+  features (upload-your-own-draft, beat-the-bot via ../17lands BC model,
+  multi-set, live community pick stats, 17lands trophy-page scrape for
+  literal "yesterday's trophies").
