@@ -6,10 +6,11 @@ Outputs: web/public/cards.{SET}.json          - card catalog (image, cost, stats
          web/public/puzzles/<id>.json         - one puzzle per trophy draft
          web/public/puzzles/manifest.json     - {"days": {play_date: [ids]}}
 
-Each play date offers the top N_PER_DAY most interesting trophy drafts from the
-previous calendar day (puzzles are "yesterday's trophies"). With a static data
-dump the last playable date is <last draft date>+1; a scheduled re-download +
-rebuild (Phase 4) keeps dates current in production.
+Each play date offers the top N_PER_DAY most interesting trophy drafts from a
+single real draft day. Draft days are mapped, in chronological order, onto
+consecutive calendar days starting at LAUNCH_DATE — the static public dataset
+can't provide literal "yesterday's trophies" (v2 idea: scrape the 17lands
+trophy page). The real draft date ships in each puzzle as "drafted".
 
 Curation: a pick is "contested" when the top two community choices in the pack
 are close (avg-taken-at gap below CONTESTED_GAP). Drafts score by contested
@@ -32,7 +33,8 @@ WEB_PUB = ROOT / "web" / "public"
 
 CONTESTED_GAP = 1.25   # ATA gap below which a pick counts as contested
 EARLY_PICK_MAX = 5     # pick_number <= this counts as "early" (first 6 of each pack)
-N_PER_DAY = 3          # puzzles published per play date (top-scored from prior day)
+N_PER_DAY = 3          # puzzles published per play date (top-scored from one draft day)
+LAUNCH_DATE = date(2026, 6, 12)  # first play date; draft days map onto days from here
 
 
 def build_catalog():
@@ -50,6 +52,7 @@ def build_catalog():
             "type": face.get("type_line", c.get("type_line", "")),
             "rarity": c["rarity"],
             "colors": face.get("colors", c.get("colors", [])),
+            "mv": int(c.get("cmc", 0)),
             "ata": None if row is None else round(float(row["avg_taken_at"]), 2),
             "prw": None if row is None else round(float(row["pick_rate_when_seen"]), 4),
         }
@@ -137,9 +140,9 @@ def main():
 
     days = {}
     n_puzzles = 0
-    for drafted in sorted(by_day):
+    for day_idx, drafted in enumerate(sorted(by_day)):
         top = sorted(by_day[drafted], key=lambda t: -t[0])[:N_PER_DAY]
-        play_date = (date.fromisoformat(drafted) + timedelta(days=1)).isoformat()
+        play_date = (LAUNCH_DATE + timedelta(days=day_idx)).isoformat()
         ids = []
         for score, puzzle in top:
             puzzle["date"] = play_date

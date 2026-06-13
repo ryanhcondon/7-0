@@ -74,6 +74,22 @@ Ryan is on the Pro plan with real token limits and uses these two conventions:
         files keyed by id. Data covers drafts 2026-04-21..06-02 → play dates
         2026-04-22..06-03; app defaults to latest day ≤ today. Phase-1
         preview.html deleted (incompatible with new manifest, was throwaway).
+  - [x] Ryan feedback round 2 (2026-06-12): (1) literal "yesterday's trophies"
+        retracted — static dataset can't sustain it; draft days now map onto
+        consecutive calendar days from LAUNCH_DATE=2026-06-12 (41 days through
+        2026-07-22), real date still shown as "drafted ...". v2 idea: scrape
+        17lands trophy page (JSON endpoints exist but undocumented).
+        (2) Stricter partial credit: flat 0.5, only when your card's prw ≥ 0.8×
+        the best prw IN THE PACK (vs-their-pick ratio was too forgiving — late
+        packs are all low-prw so random clicks looked defensible; vs-pack-best,
+        random play = ~59% red, community-favorite play never red).
+        (3) End screen headline is a simulated Premier Draft record ("You went
+        5–3"): point fraction mapped linearly over the 10 possible outcomes
+        0-3..7-0, capped at the drafter's real record (RECORD_LADDER in
+        scoring.js). (4) Maindeck reveal laid out like the 17lands-project
+        vdeck human-check reports: creature/noncreature piles by mana value,
+        stacked with title + art sliver visible (hover zooms), lands in a row.
+        Catalog gained "mv" (Scryfall cmc) to support this.
   - [ ] CHECKPOINT: Ryan playtests at localhost
 - [ ] Phase 3 — daily-game wrapper
   - [ ] Date-seeded daily puzzle, archive of past days
@@ -82,9 +98,9 @@ Ryan is on the Pro plan with real token limits and uses these two conventions:
 - [ ] Phase 4 — deploy (the only phase needing Ryan's hands)
   - [ ] `brew install gh`, `gh auth login` as ryanhcondon
   - [ ] Create GitHub repo, push, GitHub Actions build → GitHub Pages
-  - [ ] Scheduled rebuild (Actions cron): re-download 17lands data, re-run
-        pipeline, redeploy — required for "yesterday's trophies" to stay
-        current once live (check 17lands dataset refresh cadence first)
+  - [ ] (dropped 2026-06-12: scheduled data-refresh rebuild — not needed now
+        that play dates are evergreen-mapped; revisit if v2 does live
+        "yesterday's trophies" via 17lands trophy-page scrape)
   - [ ] Live at ryanhcondon.github.io/<repo>; custom domain optional later
 - [ ] Phase 5 (v2, after feedback) — upload-your-own-draft mode, beat-the-bot,
       multi-set, live community pick stats (needs tiny backend)
@@ -93,9 +109,15 @@ Ryan is on the Pro plan with real token limits and uses these two conventions:
 
 Made:
 - Fully static site, zero backend for v1. All stats precomputed offline.
-- Daily structure (Ryan, 2026-06-12): a few puzzles per day (3), specifically
-  trophy drafts from the previous calendar day — not one evergreen puzzle/day.
-  Consequence: production needs a scheduled data-refresh + rebuild (Phase 4).
+- Daily structure (Ryan, 2026-06-12, revised same day): 3 puzzles per day, all
+  from one real draft day, with draft days mapped onto consecutive calendar
+  days from launch (evergreen — works with the static dataset). Literal
+  "yesterday's trophies" needs live data (17lands trophy page scrape) — v2.
+- Partial credit (Ryan, 2026-06-12): be stingy — misses should often be red.
+  Yellow only when your card was within 0.8× of the pack's best community
+  pick rate (knobs in web/src/scoring.js). Headline result is a simulated
+  Premier Draft record (0-3..7-0, capped at the drafter's real record);
+  score with partial credit is secondary.
 - Scoring v1 partial credit uses context-blind prw (avg pick rate when seen).
   Ryan: acknowledged weak by mid-draft where picks are highly contextual, but
   "works for now". Upgrade paths, in order of preference: (a) Phase 5 live
@@ -166,3 +188,11 @@ Open (Ryan to decide, defaults in parens):
   no console errors. Gotcha: when eval-testing tabs, re-query buttons after
   every click — header remounts during puzzle load, stale nodes no-op.
   Still AWAITING Ryan playtest checkpoint, then Phase 3.
+- 2026-06-12 (session 3, cont. 2): Ryan feedback round 2 applied (see status
+  board): evergreen date mapping from LAUNCH_DATE (no more literal yesterday),
+  stricter vs-pack-best partial credit (reds now common), simulated-premier-
+  record end screen ("You went 5–3", capped at their record), maindeck reveal
+  as mana-value piles copied from ../17lands/validation/build_vdeck_report.py
+  styling. Tuning was simulation-driven — random clicker vs always-community-
+  favorite over all 123 puzzles, see scoring.js comment. Machine-verified full
+  playthrough; build clean. Phase 3 still pending Ryan's playtest checkpoint.

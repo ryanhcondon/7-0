@@ -17,7 +17,7 @@ export default function Game({ puzzle, cards }) {
   function choose(name) {
     if (revealed || done) return
     const match = name === p.picked
-    const points = scorePick(cards, name, p.picked)
+    const points = scorePick(cards, p.cards, name, p.picked)
     setResults([...results, { your: name, theirs: p.picked, match, points }])
     setRevealed(true)
   }
@@ -46,7 +46,7 @@ export default function Game({ puzzle, cards }) {
           ? last.match
             ? <>✅ Match! They took <b>{last.theirs}</b>.</>
             : <>❌ You took <b>{last.your}</b> — they took <b>{last.theirs}</b>
-                {last.points > 0 && <span className="partial"> (partial credit: +{last.points.toFixed(2)})</span>}.</>
+                {last.points > 0 && <span className="partial"> (defensible — partial credit)</span>}.</>
           : <>Which card did they pick?</>}
         {revealed && (
           <button className="next" onClick={next}>
