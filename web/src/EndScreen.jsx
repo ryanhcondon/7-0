@@ -1,4 +1,6 @@
+import { useState } from 'react'
 import { totalScore, draftRecord } from './scoring.js'
+import { shareText, copyText } from './share.js'
 
 const MV_BUCKETS = ['0', '1', '2', '3', '4', '5', '6', '7+']
 
@@ -26,12 +28,27 @@ function DeckPiles({ names, cards }) {
   )
 }
 
-export default function EndScreen({ puzzle, cards, results }) {
+export default function EndScreen({ puzzle, cards, results, meta, onNext }) {
+  const [copied, setCopied] = useState(false)
   const matches = results.filter(r => r.match).length
   const close = results.filter(r => !r.match && r.points > 0).length
   const points = results.map(r => r.points)
   const score = totalScore(points, results.length)
   const record = draftRecord(points, results.length, puzzle.record)
+
+  async function share() {
+    const ok = await copyText(shareText({
+      date: meta?.date ?? puzzle.date,
+      index: meta?.index ?? 0,
+      total: meta?.total ?? 1,
+      record,
+      wins: matches,
+      picks: results.length,
+      results,
+    }))
+    setCopied(ok)
+    if (ok) setTimeout(() => setCopied(false), 2000)
+  }
 
   return (
     <div className="end">
@@ -64,6 +81,11 @@ export default function EndScreen({ puzzle, cards, results }) {
         ))}
       </div>
 
+      <div className="end-actions">
+        <button className="next" onClick={share}>{copied ? 'Copied! ✓' : 'Share results 📋'}</button>
+        {onNext && <button className="next" onClick={onNext}>Next puzzle →</button>}
+      </div>
+
       <h3>Their maindeck</h3>
       {(() => {
         const isLand = n => (cards[n]?.type ?? '').includes('Land')
@@ -92,8 +114,6 @@ export default function EndScreen({ puzzle, cards, results }) {
           </>
         )
       })()}
-
-      <button className="next" onClick={() => window.location.reload()}>Play again ↻</button>
     </div>
   )
 }

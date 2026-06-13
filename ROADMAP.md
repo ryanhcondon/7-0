@@ -90,11 +90,24 @@ Ryan is on the Pro plan with real token limits and uses these two conventions:
         vdeck human-check reports: creature/noncreature piles by mana value,
         stacked with title + art sliver visible (hover zooms), lands in a row.
         Catalog gained "mv" (Scryfall cmc) to support this.
-  - [ ] CHECKPOINT: Ryan playtests at localhost
+  - [x] CHECKPOINT: Ryan playtested and approved ("looks great", 2026-06-12).
+        Phase 2 complete. Small game/presentation tweaks deferred — priority
+        is getting through the whole pipeline to deploy, then iterating.
 - [ ] Phase 3 — daily-game wrapper
-  - [ ] Date-seeded daily puzzle, archive of past days
-  - [ ] localStorage streaks/history, share-grid generator, mobile-first layout polish
-  - [ ] About page: 17lands attribution, Wizards Fan Content Policy notice, Scryfall credit
+  - [x] Daily view: defaults to today's 3 puzzles (first unfinished), future
+        dates hidden; Archive view lists past days with per-puzzle records;
+        playtest date-dropdown removed (2026-06-12)
+  - [x] localStorage (storage.js, key trophyPick.v1): per-pick saves (mid-game
+        resume works across reloads), completed results shown on revisit (no
+        replay), streak = consecutive days with ≥1 completed puzzle (shown
+        when >1; today-pending doesn't break it)
+  - [x] Share grid (share.js): clipboard text, one emoji row per pack —
+        "Trophy Pick 2026-06-12 · puzzle 1/3 / Went 4-3 · matched 17/42" + 3×14 🟩🟨🟥
+  - [x] About page: 17lands attribution, Wizards Fan Content Policy notice,
+        Scryfall credit, not-affiliated note
+  - [x] Mobile check at 375px: header wraps, stats stack, piles 2-up — usable;
+        deeper polish deferred per Ryan (iterate after deploy)
+  - [ ] CHECKPOINT: Ryan playtests the daily wrapper
 - [ ] Phase 4 — deploy (the only phase needing Ryan's hands)
   - [ ] `brew install gh`, `gh auth login` as ryanhcondon
   - [ ] Create GitHub repo, push, GitHub Actions build → GitHub Pages
@@ -196,3 +209,14 @@ Open (Ryan to decide, defaults in parens):
   styling. Tuning was simulation-driven — random clicker vs always-community-
   favorite over all 123 puzzles, see scoring.js comment. Machine-verified full
   playthrough; build clean. Phase 3 still pending Ryan's playtest checkpoint.
+- 2026-06-12 (session 3, cont. 3): Ryan approved Phase 2 ("looks great");
+  wants the full pipeline through deploy before more presentation tweaks.
+  Phase 3 built: storage.js (localStorage, resume + results + streak),
+  share.js (emoji grid, 1 row per pack), Archive.jsx, About.jsx, App.jsx
+  rewritten as daily wrapper (today default, future hidden, tabs show ✓ and
+  record, lands on first unfinished puzzle). Completed puzzles show their end
+  screen on revisit — no replay path (decision: keeps records honest).
+  Machine-verified: mid-game resume across reload, completion persistence,
+  next-puzzle flow, archive/about nav, share text format, mobile 375px,
+  clean build, no console errors. Next: Ryan playtests, then Phase 4 deploy
+  (needs Ryan: brew install gh, gh auth login, repo create).

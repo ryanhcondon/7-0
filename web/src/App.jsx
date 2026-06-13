@@ -1,17 +1,22 @@
 import { useEffect, useState } from 'react'
 import Game from './Game.jsx'
+import Archive from './Archive.jsx'
+import About from './About.jsx'
+import { allProgress, todayISO, currentStreak } from './storage.js'
 
-// Phase 2: local playtest build. Each day offers a few puzzles drafted the
-// previous day ("yesterday's trophies"). Defaults to today's puzzles if the
-// data has them, otherwise the most recent available day. The date dropdown
-// is a playtest aid; Phase 3 replaces it with the real daily/archive wrapper.
+// Phase 3: daily wrapper. Each calendar day exposes a few puzzles; days after
+// today stay hidden. Results, streaks and resume state live in localStorage.
 export default function App() {
   const [cards, setCards] = useState(null)
   const [manifest, setManifest] = useState(null)
   const [date, setDate] = useState(null)
   const [puzzleId, setPuzzleId] = useState(null)
   const [puzzle, setPuzzle] = useState(null)
+  const [view, setView] = useState('play') // play | archive | about
+  const [progress, setProgress] = useState(() => allProgress())
   const [error, setError] = useState(null)
+
+  const today = todayISO()
 
   useEffect(() => {
     Promise.all([
@@ -21,13 +26,13 @@ export default function App() {
       .then(([cardData, manifestData]) => {
         setCards(cardData)
         setManifest(manifestData)
-        const dates = Object.keys(manifestData.days).sort()
-        const today = new Date().toISOString().slice(0, 10)
-        const def = manifestData.days[today]
-          ? today
-          : dates.filter(d => d <= today).at(-1) ?? dates[0]
+        const dates = Object.keys(manifestData.days).sort().filter(d => d <= today)
+        const def = dates.at(-1) ?? Object.keys(manifestData.days).sort()[0]
         setDate(def)
-        setPuzzleId(manifestData.days[def][0])
+        // land on the first unfinished puzzle of the day
+        const saved = allProgress()
+        const ids = manifestData.days[def]
+        setPuzzleId(ids.find(id => !saved[id]?.done) ?? ids[0])
       })
       .catch(e => setError(`Couldn't load game data (${e.message}).`))
   }, [])
@@ -42,34 +47,64 @@ export default function App() {
   }, [puzzleId])
 
   if (error) return <div className="app"><div className="error">⚠️ {error}</div></div>
-  if (!puzzle || !cards) return <div className="app"><div className="loading">Loading…</div></div>
+  if (!manifest || !cards || (view === 'play' && !puzzle)) {
+    return <div className="app"><div className="loading">Loading…</div></div>
+  }
 
-  const dayIds = manifest.days[date]
+  const days = manifest.days
+  const dayIds = days[date] ?? []
+  const streak = currentStreak(days, progress, today)
+  const nextUnfinished = dayIds.find(id => id !== puzzleId && !progress[id]?.done)
+
+  function openPuzzle(d, id) {
+    setDate(d)
+    setPuzzleId(id)
+    setView('play')
+  }
 
   return (
     <div className="app">
       <header className="topbar">
         <h1>Trophy Pick</h1>
-        <select
-          value={date}
-          onChange={e => { setDate(e.target.value); setPuzzleId(manifest.days[e.target.value][0]) }}
-          title="Playtest: choose a day"
-        >
-          {Object.keys(manifest.days).sort().map(d => <option key={d}>{d}</option>)}
-        </select>
-        <div className="puzzle-tabs">
-          {dayIds.map((id, idx) => (
-            <button
-              key={id}
-              className={id === puzzleId ? 'tab active' : 'tab'}
-              onClick={() => setPuzzleId(id)}
-            >
-              Puzzle {idx + 1}
-            </button>
-          ))}
-        </div>
+        <span className="topbar-date">{date}</span>
+        {view === 'play' && (
+          <div className="puzzle-tabs">
+            {dayIds.map((id, idx) => {
+              const p = progress[id]
+              return (
+                <button
+                  key={id}
+                  className={id === puzzleId ? 'tab active' : 'tab'}
+                  onClick={() => setPuzzleId(id)}
+                >
+                  {idx + 1}{p?.done ? ` ✓ ${p.record}` : ''}
+                </button>
+              )
+            })}
+          </div>
+        )}
+        <nav className="topnav">
+          {streak > 1 && <span className="streak" title="day streak">🔥 {streak}</span>}
+          <button className="navlink" onClick={() => setView(view === 'archive' ? 'play' : 'archive')}>Archive</button>
+          <button className="navlink" onClick={() => setView(view === 'about' ? 'play' : 'about')}>About</button>
+        </nav>
       </header>
-      <Game key={puzzle.id} puzzle={puzzle} cards={cards} />
+
+      {view === 'about' && <About onBack={() => setView('play')} />}
+      {view === 'archive' && (
+        <Archive days={days} progress={progress} today={today} onPick={openPuzzle} onBack={() => setView('play')} />
+      )}
+      {view === 'play' && (
+        <Game
+          key={puzzle.id}
+          puzzle={puzzle}
+          cards={cards}
+          saved={progress[puzzle.id]}
+          meta={{ date, index: dayIds.indexOf(puzzleId), total: dayIds.length }}
+          onComplete={entry => setProgress({ ...progress, [puzzle.id]: entry })}
+          onNext={nextUnfinished ? () => setPuzzleId(nextUnfinished) : null}
+        />
+      )}
     </div>
   )
 }

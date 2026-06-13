@@ -27,6 +27,26 @@ body {
 .tab { padding: 5px 10px; font-size: .9em; }
 .tab.active { background: #2d4f8a; border-color: #3a64ad; }
 
+.topbar-date { color: var(--muted); }
+.topnav { margin-left: auto; display: inline-flex; gap: 10px; align-items: center; }
+.navlink { background: none; border: none; color: var(--muted); padding: 4px 2px; }
+.navlink:hover { color: var(--text); }
+.streak { color: var(--yellow); font-weight: 600; }
+
+.end-actions { display: flex; gap: 10px; justify-content: center; margin-bottom: 8px; }
+.end-actions .next { margin-left: 0; }
+
+.archive, .about { max-width: 640px; margin: 0 auto; }
+.archive h2, .about h2 { margin-top: 18px; }
+.archive-day { display: flex; align-items: center; gap: 14px; padding: 7px 4px; border-bottom: 1px solid var(--border); }
+.archive-date { color: var(--muted); min-width: 11em; }
+.archive-chips { display: inline-flex; gap: 6px; }
+.chip { font-size: .85em; padding: 4px 9px; }
+.chip.done { border-color: var(--green); color: var(--green); }
+.about p { line-height: 1.5; }
+.about .legal { color: var(--muted); font-size: .85em; }
+.about a { color: #6ea8ff; }
+
 select, button {
   font-size: 1em; padding: 6px 12px; border-radius: 6px;
   border: 1px solid var(--border); background: var(--panel);

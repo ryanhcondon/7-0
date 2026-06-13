@@ -1,11 +1,24 @@
 import { useState } from 'react'
-import { scorePick, totalScore } from './scoring.js'
+import { scorePick, totalScore, draftRecord } from './scoring.js'
+import { saveProgress } from './storage.js'
 import EndScreen from './EndScreen.jsx'
 
-export default function Game({ puzzle, cards }) {
-  const [i, setI] = useState(0)            // current pick index
+function replaySaved(puzzle, cards, savedPicks) {
+  return (savedPicks ?? []).slice(0, puzzle.picks.length).map((name, idx) => {
+    const p = puzzle.picks[idx]
+    return {
+      your: name,
+      theirs: p.picked,
+      match: name === p.picked,
+      points: scorePick(cards, p.cards, name, p.picked),
+    }
+  })
+}
+
+export default function Game({ puzzle, cards, saved, meta, onComplete, onNext }) {
+  const [results, setResults] = useState(() => replaySaved(puzzle, cards, saved?.picks))
+  const [i, setI] = useState(results.length) // current pick index
   const [revealed, setRevealed] = useState(false)
-  const [results, setResults] = useState([]) // {your, theirs, match, points} per pick
 
   const picks = puzzle.picks
   const done = i >= picks.length
@@ -18,8 +31,20 @@ export default function Game({ puzzle, cards }) {
     if (revealed || done) return
     const match = name === p.picked
     const points = scorePick(cards, p.cards, name, p.picked)
-    setResults([...results, { your: name, theirs: p.picked, match, points }])
+    const next = [...results, { your: name, theirs: p.picked, match, points }]
+    setResults(next)
     setRevealed(true)
+
+    const entry = { picks: next.map(r => r.your), date: puzzle.date }
+    if (next.length === picks.length) {
+      const pts = next.map(r => r.points)
+      entry.done = true
+      entry.wins = next.filter(r => r.match).length
+      entry.score = totalScore(pts, picks.length)
+      entry.record = draftRecord(pts, picks.length, puzzle.record)
+      onComplete?.(entry)
+    }
+    saveProgress(puzzle.id, entry)
   }
 
   function next() {
@@ -27,7 +52,9 @@ export default function Game({ puzzle, cards }) {
     setI(i + 1)
   }
 
-  if (done) return <EndScreen puzzle={puzzle} cards={cards} results={results} />
+  if (done && !revealed) {
+    return <EndScreen puzzle={puzzle} cards={cards} results={results} meta={meta} onNext={onNext} />
+  }
 
   const last = results[results.length - 1]
 
