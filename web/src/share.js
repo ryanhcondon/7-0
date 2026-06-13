@@ -6,7 +6,7 @@ export function shareText({ date, index, total, record, wins, picks, results }) 
       .map(r => (r.match ? '🟩' : r.points > 0 ? '🟨' : '🟥')).join(''))
   }
   return [
-    `Trophy Pick ${date} · puzzle ${index + 1}/${total}`,
+    `7-0 ${date} · puzzle ${index + 1}/${total}`,
     `Went ${record} · matched ${wins}/${picks}`,
     ...rows,
   ].join('\n')

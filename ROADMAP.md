@@ -1,4 +1,4 @@
-# Trophy Pick (working title) — daily MTG draft prediction game
+# 7-0 — daily MTG draft prediction game (was working title "Trophy Pick")
 
 A free, login-free daily web game: follow an anonymized 7-win (trophy) draft from a
 high-ranked 17lands player, pick by pick. You see the pack and their pool; predict their
@@ -111,9 +111,14 @@ Ryan is on the Pro plan with real token limits and uses these two conventions:
 - [ ] Phase 4 — deploy (the only phase needing Ryan's hands)
   - [x] GitHub Actions workflow prepped (.github/workflows/deploy.yml: build
         web/ on push to main, deploy to Pages; vite base './' already set)
-  - [ ] `brew install gh`, `gh auth login` as ryanhcondon
-  - [ ] Create GitHub repo (needs final name decision!), push, enable Pages
-        with "GitHub Actions" as source
+  - [x] Auth sorted (2026-06-12): NO gh CLI, and the keychain HTTPS token
+        (ghp_, ryanhcondon) is EXPIRED → 401. But SSH key ~/.ssh/id_rsa
+        authenticates fine ("Hi ryanhcondon!"). Use SSH remotes. gh not needed.
+  - [ ] Ryan: create empty repo named "7-0" at github.com/new (no README/
+        .gitignore — we already have history). Then Claude: git remote add
+        origin git@github.com:ryanhcondon/7-0.git && git push -u origin main.
+  - [ ] Ryan: enable Pages — repo Settings → Pages → Source = "GitHub Actions"
+        (the deploy.yml workflow handles the rest on push).
   - [ ] (dropped 2026-06-12: scheduled data-refresh rebuild — not needed now
         that play dates are evergreen-mapped; revisit if v2 does live
         "yesterday's trophies" via 17lands trophy-page scrape)
@@ -146,11 +151,14 @@ Made:
 - Local-first: phases 1-3 run/playtest entirely on Ryan's machine.
 - Stack: Python pipeline → static JSON → React+Vite SPA.
 
-Open (Ryan to decide, defaults in parens):
-- Scoring: pure match vs partial credit for defensible picks (default: partial credit
-  via community pick rates)
-- Final name (candidates: Seven Oh, Trophy Pick, The Wheel, P1P1 Daily) — blocks only
-  the repo/domain name
+Made (continued):
+- Final name = **7-0** (Ryan, 2026-06-12). Repo will be ryanhcondon/7-0 →
+  ryanhcondon.github.io/7-0. In-app branding updated (title, h1, About, share
+  text). Local folder stays trophy-pick (cosmetic; git remote name differs).
+- Scoring: partial credit for defensible picks via community pick rates
+  (settled, stingy variant — see scoring decision above).
+
+Open: none blocking. (v2 ideas tracked in Phase 5.)
 
 ## Key facts
 

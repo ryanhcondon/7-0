@@ -1,7 +1,7 @@
 export default function About({ onBack }) {
   return (
     <div className="about">
-      <h2>About Trophy Pick</h2>
+      <h2>About 7-0</h2>
       <p>
         Each day you get a few real trophy drafts — 7-win runs by high-ranked
         players in Magic: The Gathering Arena Premier Draft. You see every pack
@@ -14,14 +14,14 @@ export default function About({ onBack }) {
       <p>
         Draft data comes from the wonderful public datasets at{' '}
         <a href="https://www.17lands.com" target="_blank" rel="noreferrer">17lands.com</a>.
-        Trophy Pick is not affiliated with 17lands.
+        7-0 is not affiliated with 17lands.
       </p>
       <p>
         Card images and metadata courtesy of{' '}
         <a href="https://scryfall.com" target="_blank" rel="noreferrer">Scryfall</a>.
       </p>
       <p className="legal">
-        Trophy Pick is unofficial Fan Content permitted under the{' '}
+        7-0 is unofficial Fan Content permitted under the{' '}
         <a href="https://company.wizards.com/en/legal/fancontentpolicy" target="_blank" rel="noreferrer">
           Wizards of the Coast Fan Content Policy
         </a>. Not approved or endorsed by Wizards. Portions of the materials

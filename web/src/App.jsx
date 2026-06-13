@@ -65,7 +65,7 @@ export default function App() {
   return (
     <div className="app">
       <header className="topbar">
-        <h1>Trophy Pick</h1>
+        <h1>7-0</h1>
         <span className="topbar-date">{date}</span>
         {view === 'play' && (
           <div className="puzzle-tabs">
