@@ -295,7 +295,9 @@ Open: none blocking. (v2 ideas tracked in Phase 5.)
   new pipeline). Their pool-so-far renders ABOVE the pack (key context). Match=win, miss=loss (binary, per Ryan);
   run ends at 7 wins or 3 losses. Toggle: "Mixed drafts" (each round a different
   drafter — format snapshot) vs "One draft" (all picks from one drafter, pool
-  grows coherently). Shows that drafter's real pool-so-far for context. Endless
+  grows coherently). Shows that drafter's real pool-so-far for context. In
+  One-draft mode the end screen also reveals that drafter's full final deck
+  (reuses EndScreen's now-exported DeckView; Mixed shows no deck). Endless
   (Play again / flip toggle); no localStorage/streak persistence for Quick yet.
   App.jsx gained a mode toggle (daily|quick) in the nav; Daily path unchanged.
   End screen = record + emoji grid + per-round recap + share. Verified full

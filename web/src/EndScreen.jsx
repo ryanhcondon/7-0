@@ -44,7 +44,7 @@ function DeckPiles({ entries, cards }) {
 }
 
 // A full deck: creature / noncreature piles by mana value, lands in a row.
-function DeckView({ entries, cards }) {
+export function DeckView({ entries, cards }) {
   const isLand = n => (cards[n]?.type ?? '').includes('Land')
   const isCreature = n => (cards[n]?.type ?? '').includes('Creature') && !isLand(n)
   const creatures = entries.filter(e => isCreature(e.name))

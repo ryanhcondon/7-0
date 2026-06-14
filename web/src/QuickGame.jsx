@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { scorePick } from './scoring.js'
 import { copyText } from './share.js'
+import { DeckView } from './EndScreen.jsx'
 
 // Compressed "best-of" mode (think 82-0 / Six Rings): a ladder of individual
 // picks at escalating draft positions. Match their pick = a win, miss = a loss.
@@ -62,15 +63,17 @@ function roundFromPuzzle(pz, slot) {
 async function buildRounds(allIds, variant) {
   if (variant === 'same') {
     const pz = await fetchPuzzle(rand(allIds))
-    return SLOTS.map(s => roundFromPuzzle(pz, s))
+    // one-draft mode: keep the source deck to reveal at the end
+    return { rounds: SLOTS.map(s => roundFromPuzzle(pz, s)), source: pz }
   }
   const pzs = await Promise.all(sample(allIds, SLOTS.length).map(fetchPuzzle))
-  return SLOTS.map((s, k) => roundFromPuzzle(pzs[k], s))
+  return { rounds: SLOTS.map((s, k) => roundFromPuzzle(pzs[k], s)), source: null }
 }
 
 export default function QuickGame({ cards, allIds }) {
   const [variant, setVariant] = useState('mixed') // mixed | same
   const [rounds, setRounds] = useState(null)
+  const [source, setSource] = useState(null) // source puzzle (one-draft mode)
   const [seed, setSeed] = useState(0) // bump to start a fresh run
   const [i, setI] = useState(0)
   const [revealed, setRevealed] = useState(false)
@@ -84,7 +87,11 @@ export default function QuickGame({ cards, allIds }) {
     setRevealed(false)
     setResults([])
     setCopied(false)
-    buildRounds(allIds, variant).then(r => { if (live) setRounds(r) })
+    buildRounds(allIds, variant).then(({ rounds, source }) => {
+      if (!live) return
+      setRounds(rounds)
+      setSource(source)
+    })
     return () => { live = false }
   }, [variant, seed, allIds])
 
@@ -180,6 +187,14 @@ export default function QuickGame({ cards, allIds }) {
           <button className="next" onClick={newRun}>Play again →</button>
         </div>
         <Toggle />
+
+        {variant === 'same' && source?.deck && (
+          <div className="quick-deck">
+            <h3>Their deck</h3>
+            <div className="deck-legend">{source.rank} player · went {source.record}</div>
+            <DeckView entries={source.deck.map(name => ({ name }))} cards={cards} />
+          </div>
+        )}
       </div>
     )
   }
