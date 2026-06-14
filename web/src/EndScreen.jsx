@@ -97,7 +97,7 @@ export default function EndScreen({ puzzle, cards, results, meta, onNext }) {
       <div className="record-headline">
         <div className="record-label">You went</div>
         <div className="record">{record.replace('-', '–')}</div>
-        <div className="record-note">…if draft records were based on how well you matched someone else's picks 😉</div>
+        <div className="record-note">…if draft records were based on how well you matched someone else's picks <span style={{ fontStyle: 'normal' }}>😉</span></div>
       </div>
       <div className="end-stats">
         <div className="end-stat">
@@ -175,34 +175,16 @@ export default function EndScreen({ puzzle, cards, results, meta, onNext }) {
                 read against their deck to see how yours would have come together
               </div>
               <div className="deck-note">
-                A literal one-for-one of your picks — some (early off-color speculation, say)
-                you'd really cut. Your full pool below lets you swap those for cards that fit.
+                A literal 1-for-1 swap of the cards you took in place of the cards they
+                maindecked. There are probably some you'd actually cut — you can see your
+                full pool below to fill in those slots.
               </div>
               <DeckView entries={yourEntries} cards={cards} />
-
-              <details className="pool swaps">
-                <summary>The {n} swap{n === 1 ? '' : 's'}, one for one</summary>
-                <div className="swap-list">
-                  {swaps.map((e, idx) => (
-                    <div className="swap-row" key={idx}>
-                      <span className="side you">
-                        <span className="nm">{e.your}</span>
-                        <img src={cards[e.your]?.img} alt={e.your} loading="lazy" />
-                      </span>
-                      <span className="mid">in over</span>
-                      <span className="side them">
-                        <img src={cards[e.their]?.img} alt={e.their} loading="lazy" />
-                        <span className="nm">{e.their}</span>
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              </details>
             </>}
 
             {restEntries.length > 0 && (
               <details className="pool restpool">
-                <summary>The rest of your pool ({restEntries.length}) — cards you drafted they didn't maindeck</summary>
+                <summary>The rest of your pool ({restEntries.length}) — cards you drafted over cards they <em>didn't</em> maindeck</summary>
                 <DeckView entries={restEntries} cards={cards} />
               </details>
             )}
