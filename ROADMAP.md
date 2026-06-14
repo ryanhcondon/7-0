@@ -93,7 +93,7 @@ Ryan is on the Pro plan with real token limits and uses these two conventions:
   - [x] CHECKPOINT: Ryan playtested and approved ("looks great", 2026-06-12).
         Phase 2 complete. Small game/presentation tweaks deferred — priority
         is getting through the whole pipeline to deploy, then iterating.
-- [ ] Phase 3 — daily-game wrapper
+- [x] Phase 3 — daily-game wrapper (complete 2026-06-12, deployed)
   - [x] Daily view: defaults to today's 3 puzzles (first unfinished), future
         dates hidden; Archive view lists past days with per-puzzle records;
         playtest date-dropdown removed (2026-06-12)
@@ -107,7 +107,8 @@ Ryan is on the Pro plan with real token limits and uses these two conventions:
         Scryfall credit, not-affiliated note
   - [x] Mobile check at 375px: header wraps, stats stack, piles 2-up — usable;
         deeper polish deferred per Ryan (iterate after deploy)
-  - [ ] CHECKPOINT: Ryan playtests the daily wrapper
+  - [x] CHECKPOINT: Ryan playtested the daily wrapper live and approved
+        ("really good spot", 2026-06-12). Phase 3 complete.
 - [x] Phase 4 — deploy. LIVE at https://ryanhcondon.github.io/7-0/ (2026-06-12)
   - [x] GitHub Actions workflow (.github/workflows/deploy.yml: build web/ on
         push to main, deploy to Pages; vite base './' confirmed working under
@@ -251,3 +252,37 @@ Open: none blocking. (v2 ideas tracked in Phase 5.)
   Built by aligning puzzle.picks[i].maindecked with results[i] (deck ==
   sorted maindecked picks, verified). EndScreen DeckPiles now takes entries
   [{name,missed,yourPick}] not bare names. Committed locally; not yet pushed.
+- 2026-06-12 (session 3, cont. 6 — END of session, all pushed & LIVE): more
+  end-screen iteration, then a batch push. Changes this stretch:
+  (1) Fixed highlighted cards "popping" above the stack — removed the z-index/
+      position bump on .missed/.swap; outline+glow only (CSS in styles.css).
+  (2) Reworked the swap view into "Your version of the deck": your pick at
+      every maindecked slot rendered in the same mana-value pile format,
+      swapped-in cards outlined BLUE (--swap), read against their RED-outlined
+      deck above. Generalized DeckPiles/DeckView to entries [{name,cls,title}].
+      1-for-1 kept via blue-card tooltips + a cleaned collapsible "swaps, one
+      for one" list (your card "in over" their card).
+  (3) Added collapsible "The rest of your pool" = your picks at slots they
+      DIDN'T maindeck (your 42 picks split: maindeck slots = your deck, rest =
+      bench), so the player can mentally swap off-color/unplayable 1-for-1
+      cards for ones that fit. Note: reconstruction is a literal 1-for-1 guess,
+      NOT a real deckbuild (an italic note in-app says so). True deckbuild via
+      ../17lands BC model is a deferred Phase-5 option.
+  (4) Reworked the record curve (draftRecord in scoring.js): was flat frac*10
+      (50%→5-3, too generous). Now piecewise, Ryan's anchors: <50%→0-3,
+      ~90%→7-2, 95%+→7-0, interpolated between, still capped at their record.
+      Knobs = the 0.50/0.90/0.95 anchors at top of draftRecord.
+  (5) Italic note under the headline record clarifies it's a pick-MATCHING
+      score, not a projected record for your deck.
+  All committed AND pushed (origin fe5aca6..248b661); deploy auto-ran, verified
+  live bundle on https://ryanhcondon.github.io/7-0/ contains the new strings.
+  Local = origin = live, fully in sync. Phases 0-4 all complete.
+  NEXT SESSION: more of Ryan's aesthetic/game tweak list (open-ended; no
+  specific item queued). Run `npm run dev --prefix web` or launch config
+  "game-dev" (vite :5173) to playtest; edits auto-deploy on push to main.
+  Tuning knobs: scoring.js (record anchors, PARTIAL_CREDIT/PARTIAL_MIN_RATIO),
+  build_puzzles.py (CONTESTED_GAP, EARLY_PICK_MAX, N_PER_DAY, LAUNCH_DATE).
+  Gotcha for testing: completed puzzles freeze their record in localStorage
+  (key trophyPick.v1) at finish time — old saves show old scores; play a fresh
+  puzzle or clear site data to see scoring changes. When eval-driving the UI,
+  re-query buttons after each click (header remounts on puzzle/tab switch).
