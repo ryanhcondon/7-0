@@ -10,12 +10,12 @@ const SLOTS = [
   { label: 'P1P1',     pack: 0, lo: 0, hi: 0 },
   { label: 'P1 early', pack: 0, lo: 1, hi: 3 },
   { label: 'P1 mid',   pack: 0, lo: 4, hi: 7 },
-  { label: 'P1 late',  pack: 0, lo: 8, hi: 13 },
   { label: 'P2P1',     pack: 1, lo: 0, hi: 0 },
-  { label: 'P2 early', pack: 1, lo: 1, hi: 4 },
-  { label: 'P2 late',  pack: 1, lo: 5, hi: 13 },
-  { label: 'P3 early', pack: 2, lo: 0, hi: 4 },
-  { label: 'P3 late',  pack: 2, lo: 5, hi: 13 },
+  { label: 'P2 early', pack: 1, lo: 1, hi: 3 },
+  { label: 'P2 mid',   pack: 1, lo: 4, hi: 7 },
+  { label: 'P3P1',     pack: 2, lo: 0, hi: 0 },
+  { label: 'P3 early', pack: 2, lo: 1, hi: 3 },
+  { label: 'P3 mid',   pack: 2, lo: 4, hi: 7 },
 ]
 
 const WIN_TARGET = 7
@@ -203,6 +203,17 @@ export default function QuickGame({ cards, allIds }) {
         ))}
       </div>
 
+      {r.pool.length > 0 && (
+        <div className="pool">
+          <div className="pool-label">Their pool so far ({r.pool.length})</div>
+          <div className="pool-cards">
+            {r.pool.map((name, idx) => (
+              <img key={idx} src={cards[name]?.img} alt={name} title={name} loading="lazy" />
+            ))}
+          </div>
+        </div>
+      )}
+
       <div className="banner">
         {revealed
           ? last.match
@@ -236,17 +247,6 @@ export default function QuickGame({ cards, allIds }) {
           )
         })}
       </div>
-
-      {r.pool.length > 0 && (
-        <div className="pool">
-          <div className="pool-label">Their pool so far ({r.pool.length})</div>
-          <div className="pool-cards">
-            {r.pool.map((name, idx) => (
-              <img key={idx} src={cards[name]?.img} alt={name} title={name} loading="lazy" />
-            ))}
-          </div>
-        </div>
-      )}
     </div>
   )
 }
