@@ -244,3 +244,10 @@ Open: none blocking. (v2 ideas tracked in Phase 5.)
   features (upload-your-own-draft, beat-the-bot via ../17lands BC model,
   multi-set, live community pick stats, 17lands trophy-page scrape for
   literal "yesterday's trophies").
+- 2026-06-12 (session 3, cont. 5): Post-launch aesthetic iteration begins.
+  End-screen deck reveal now highlights maindeck cards you passed on (red
+  outline + glow, legend count) and adds a collapsible "What you took instead"
+  1-for-1 swap view (their card ← your pick) per missed maindecked pick.
+  Built by aligning puzzle.picks[i].maindecked with results[i] (deck ==
+  sorted maindecked picks, verified). EndScreen DeckPiles now takes entries
+  [{name,missed,yourPick}] not bare names. Committed locally; not yet pushed.

@@ -113,6 +113,29 @@ button.next:hover { background: #3a64ad; }
 /* card aspect is ~139% of width; -112% margin leaves the ~title strip + art sliver visible */
 .pile-cards img + img { margin-top: -112%; }
 .pile-cards img:hover { z-index: 2; transform: scale(1.55); transform-origin: center 20%; }
+/* cards in their deck you didn't pick — outline + glow so they pop in the stack */
+.pile-cards img.missed, .deck img.missed {
+  outline: 3px solid var(--red);
+  outline-offset: -2px;
+  box-shadow: 0 0 9px 1px rgba(248, 81, 73, .65);
+  position: relative;
+  z-index: 1;
+}
+
+.deck-legend { color: var(--muted); font-size: .9em; margin: 14px 0 0; }
+.deck-legend .swatch {
+  display: inline-block; width: 12px; height: 12px; vertical-align: -1px;
+  border-radius: 3px; border: 2px solid var(--red); box-shadow: 0 0 6px rgba(248, 81, 73, .6);
+}
+
+.swaps summary { color: var(--muted); font-size: .9em; cursor: pointer; margin: 18px 0 6px; text-align: center; }
+.swaps summary:hover { color: var(--text); }
+.swap-list { display: flex; flex-wrap: wrap; gap: 16px 22px; justify-content: center; }
+.swap { display: flex; align-items: center; gap: 8px; }
+.swap figure { margin: 0; display: flex; flex-direction: column; align-items: center; }
+.swap figure img { width: 96px; border-radius: 5px; display: block; }
+.swap figcaption { color: var(--muted); font-size: .75em; margin-top: 3px; }
+.swap-arrow { color: var(--muted); font-size: 1.4em; }
 
 @media (max-width: 600px) {
   .card { width: calc(33.3% - 6px); }
