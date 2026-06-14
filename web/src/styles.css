@@ -7,6 +7,7 @@
   --yellow: #d29922;
   --red: #f85149;
   --border: #3a3f4d;
+  --swap: #58a6ff;
 }
 
 * { box-sizing: border-box; }
@@ -113,29 +114,37 @@ button.next:hover { background: #3a64ad; }
 /* card aspect is ~139% of width; -112% margin leaves the ~title strip + art sliver visible */
 .pile-cards img + img { margin-top: -112%; }
 .pile-cards img:hover { z-index: 2; transform: scale(1.55); transform-origin: center 20%; }
-/* cards in their deck you didn't pick — outline + glow so they pop in the stack */
+/* Highlight a card in a deck without disturbing the stack (no z-index change,
+   so it still tucks under the cards on top of it). outline-offset keeps the
+   ring on the visible title strip. */
 .pile-cards img.missed, .deck img.missed {
-  outline: 3px solid var(--red);
-  outline-offset: -2px;
-  box-shadow: 0 0 9px 1px rgba(248, 81, 73, .65);
-  position: relative;
-  z-index: 1;
+  outline: 3px solid var(--red); outline-offset: -3px;
+  box-shadow: 0 0 8px 1px rgba(248, 81, 73, .6);
+}
+.pile-cards img.swap, .deck img.swap {
+  outline: 3px solid var(--swap); outline-offset: -3px;
+  box-shadow: 0 0 8px 1px rgba(88, 166, 255, .6);
 }
 
-.deck-legend { color: var(--muted); font-size: .9em; margin: 14px 0 0; }
+.deck-legend { color: var(--muted); font-size: .9em; margin: 14px auto 0; max-width: 620px; }
 .deck-legend .swatch {
   display: inline-block; width: 12px; height: 12px; vertical-align: -1px;
-  border-radius: 3px; border: 2px solid var(--red); box-shadow: 0 0 6px rgba(248, 81, 73, .6);
+  border-radius: 3px; margin-right: 2px;
 }
+.deck-legend .swatch.missed { border: 2px solid var(--red); box-shadow: 0 0 6px rgba(248, 81, 73, .6); }
+.deck-legend .swatch.swap { border: 2px solid var(--swap); box-shadow: 0 0 6px rgba(88, 166, 255, .6); }
 
-.swaps summary { color: var(--muted); font-size: .9em; cursor: pointer; margin: 18px 0 6px; text-align: center; }
+.swaps summary { color: var(--muted); font-size: .9em; cursor: pointer; margin: 18px 0 8px; text-align: center; }
 .swaps summary:hover { color: var(--text); }
-.swap-list { display: flex; flex-wrap: wrap; gap: 16px 22px; justify-content: center; }
-.swap { display: flex; align-items: center; gap: 8px; }
-.swap figure { margin: 0; display: flex; flex-direction: column; align-items: center; }
-.swap figure img { width: 96px; border-radius: 5px; display: block; }
-.swap figcaption { color: var(--muted); font-size: .75em; margin-top: 3px; }
-.swap-arrow { color: var(--muted); font-size: 1.4em; }
+.swap-list { display: flex; flex-direction: column; gap: 7px; max-width: 540px; margin: 0 auto; }
+.swap-row { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 12px; }
+.swap-row .side { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.swap-row .side img { width: 38px; border-radius: 4px; flex: none; }
+.swap-row .side .nm { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: .9em; }
+.swap-row .you { justify-content: flex-end; text-align: right; }
+.swap-row .you .nm { color: var(--swap); }
+.swap-row .them .nm { color: var(--red); }
+.swap-row .mid { color: var(--muted); font-size: .78em; white-space: nowrap; }
 
 @media (max-width: 600px) {
   .card { width: calc(33.3% - 6px); }

@@ -4,8 +4,21 @@ import { shareText, copyText } from './share.js'
 
 const MV_BUCKETS = ['0', '1', '2', '3', '4', '5', '6', '7+']
 
-// entries: [{ name, missed, yourPick }] — missed cards (you took something else
-// at that pick) get a highlight, with your alternative in the tooltip.
+// A card in a rendered deck. cls highlights it (e.g. 'missed' / 'swap'),
+// title is the hover tooltip.
+function Tile({ entry, cards }) {
+  return (
+    <img
+      src={cards[entry.name]?.img}
+      alt={entry.name}
+      title={entry.title ?? entry.name}
+      loading="lazy"
+      className={entry.cls ?? ''}
+    />
+  )
+}
+
+// entries: [{ name, cls?, title? }] — mana-value piles, sorted within a pile.
 function DeckPiles({ entries, cards }) {
   const buckets = new Map()
   for (const e of entries) {
@@ -20,20 +33,40 @@ function DeckPiles({ entries, cards }) {
         <div key={label} className="pile">
           <div className="pile-label">{label}</div>
           <div className="pile-cards">
-            {buckets.get(label).sort((a, b) => a.name.localeCompare(b.name)).map((e, idx) => (
-              <img
-                key={idx}
-                src={cards[e.name]?.img}
-                alt={e.name}
-                title={e.missed ? `${e.name} — you took ${e.yourPick} instead` : e.name}
-                loading="lazy"
-                className={e.missed ? 'missed' : ''}
-              />
+            {buckets.get(label).slice().sort((a, b) => a.name.localeCompare(b.name)).map((e, idx) => (
+              <Tile key={idx} entry={e} cards={cards} />
             ))}
           </div>
         </div>
       ))}
     </div>
+  )
+}
+
+// A full deck: creature / noncreature piles by mana value, lands in a row.
+function DeckView({ entries, cards }) {
+  const isLand = n => (cards[n]?.type ?? '').includes('Land')
+  const isCreature = n => (cards[n]?.type ?? '').includes('Creature') && !isLand(n)
+  const creatures = entries.filter(e => isCreature(e.name))
+  const spells = entries.filter(e => !isCreature(e.name) && !isLand(e.name))
+  const lands = entries.filter(e => isLand(e.name))
+  return (
+    <>
+      {creatures.length > 0 && <>
+        <div className="section-label">Creatures ({creatures.length})</div>
+        <DeckPiles entries={creatures} cards={cards} />
+      </>}
+      {spells.length > 0 && <>
+        <div className="section-label">Noncreatures ({spells.length})</div>
+        <DeckPiles entries={spells} cards={cards} />
+      </>}
+      {lands.length > 0 && <>
+        <div className="section-label">Lands ({lands.length})</div>
+        <div className="deck">
+          {lands.map((e, idx) => <Tile key={idx} entry={e} cards={cards} />)}
+        </div>
+      </>}
+    </>
   )
 }
 
@@ -95,72 +128,66 @@ export default function EndScreen({ puzzle, cards, results, meta, onNext }) {
         {onNext && <button className="next" onClick={onNext}>Next puzzle →</button>}
       </div>
 
-      <h3>Their maindeck</h3>
       {(() => {
-        // Each maindecked card aligned to the pick it came from, so we know
-        // whether you matched and what you took instead.
-        const entries = puzzle.picks
-          .map((p, i) => ({ name: p.picked, maindecked: p.maindecked, missed: !results[i].match, yourPick: results[i].your }))
+        // Each maindecked card aligned to the pick it came from: their card,
+        // your pick at that slot, and whether you matched.
+        const md = puzzle.picks
+          .map((p, i) => ({ their: p.picked, maindecked: p.maindecked, your: results[i].your, missed: !results[i].match }))
           .filter(e => e.maindecked)
-        const missedCount = entries.filter(e => e.missed).length
+        const swaps = md.filter(e => e.missed)
+        const n = swaps.length
 
-        const isLand = n => (cards[n]?.type ?? '').includes('Land')
-        const isCreature = n => (cards[n]?.type ?? '').includes('Creature') && !isLand(n)
-        const creatures = entries.filter(e => isCreature(e.name))
-        const lands = entries.filter(e => isLand(e.name))
-        const spells = entries.filter(e => !isCreature(e.name) && !isLand(e.name))
+        // Their actual deck (cards you missed outlined red).
+        const theirEntries = md.map(e => ({
+          name: e.their,
+          cls: e.missed ? 'missed' : '',
+          title: e.missed ? `${e.their} — you took ${e.your} instead` : e.their,
+        }))
+        // Your version: your pick at every slot (swapped-in cards outlined blue).
+        const yourEntries = md.map(e => ({
+          name: e.your,
+          cls: e.missed ? 'swap' : '',
+          title: e.missed ? `${e.your} — you ran this over ${e.their}` : e.your,
+        }))
+
         return (
           <>
-            {missedCount > 0 && (
+            <h3>Their maindeck</h3>
+            {n > 0 && (
               <div className="deck-legend">
-                <span className="swatch" /> {missedCount} card{missedCount === 1 ? '' : 's'} they
+                <span className="swatch missed" /> {n} card{n === 1 ? '' : 's'} they
                 maindecked that you passed on
               </div>
             )}
-            {creatures.length > 0 && <>
-              <div className="section-label">Creatures ({creatures.length})</div>
-              <DeckPiles entries={creatures} cards={cards} />
-            </>}
-            {spells.length > 0 && <>
-              <div className="section-label">Noncreatures ({spells.length})</div>
-              <DeckPiles entries={spells} cards={cards} />
-            </>}
-            {lands.length > 0 && <>
-              <div className="section-label">Lands ({lands.length})</div>
-              <div className="deck">
-                {lands.map((e, idx) => (
-                  <img
-                    key={idx}
-                    src={cards[e.name]?.img}
-                    alt={e.name}
-                    title={e.missed ? `${e.name} — you took ${e.yourPick} instead` : e.name}
-                    loading="lazy"
-                    className={e.missed ? 'missed' : ''}
-                  />
-                ))}
-              </div>
-            </>}
+            <DeckView entries={theirEntries} cards={cards} />
 
-            {missedCount > 0 && (
+            {n > 0 && <>
+              <h3>Your version of the deck</h3>
+              <div className="deck-legend">
+                <span className="swatch swap" /> {n} card{n === 1 ? '' : 's'} you took in their place —
+                read against their deck to see how yours would have come together
+              </div>
+              <DeckView entries={yourEntries} cards={cards} />
+
               <details className="pool swaps">
-                <summary>What you took instead ({missedCount})</summary>
+                <summary>The {n} swap{n === 1 ? '' : 's'}, one for one</summary>
                 <div className="swap-list">
-                  {entries.filter(e => e.missed).map((e, idx) => (
-                    <div className="swap" key={idx}>
-                      <figure>
-                        <img src={cards[e.name]?.img} alt={e.name} title={e.name} loading="lazy" />
-                        <figcaption>in their deck</figcaption>
-                      </figure>
-                      <span className="swap-arrow">←</span>
-                      <figure>
-                        <img src={cards[e.yourPick]?.img} alt={e.yourPick} title={e.yourPick} loading="lazy" />
-                        <figcaption>you took</figcaption>
-                      </figure>
+                  {swaps.map((e, idx) => (
+                    <div className="swap-row" key={idx}>
+                      <span className="side you">
+                        <span className="nm">{e.your}</span>
+                        <img src={cards[e.your]?.img} alt={e.your} loading="lazy" />
+                      </span>
+                      <span className="mid">in over</span>
+                      <span className="side them">
+                        <img src={cards[e.their]?.img} alt={e.their} loading="lazy" />
+                        <span className="nm">{e.their}</span>
+                      </span>
                     </div>
                   ))}
                 </div>
               </details>
-            )}
+            </>}
           </>
         )
       })()}
