@@ -149,6 +149,12 @@ export default function EndScreen({ puzzle, cards, results, meta, onNext }) {
           cls: e.missed ? 'swap' : '',
           title: e.missed ? `${e.your} — you ran this over ${e.their}` : e.your,
         }))
+        // The rest of your pool: your picks at slots they didn't maindeck — the
+        // cards you'd swap in for any of the above that don't fit your colors.
+        const restEntries = puzzle.picks
+          .map((p, i) => ({ name: results[i].your, maindecked: p.maindecked }))
+          .filter(e => !e.maindecked)
+          .map(e => ({ name: e.name }))
 
         return (
           <>
@@ -166,6 +172,10 @@ export default function EndScreen({ puzzle, cards, results, meta, onNext }) {
               <div className="deck-legend">
                 <span className="swatch swap" /> {n} card{n === 1 ? '' : 's'} you took in their place —
                 read against their deck to see how yours would have come together
+              </div>
+              <div className="deck-note">
+                A literal one-for-one of your picks — some (early off-color speculation, say)
+                you'd really cut. Your full pool below lets you swap those for cards that fit.
               </div>
               <DeckView entries={yourEntries} cards={cards} />
 
@@ -188,6 +198,13 @@ export default function EndScreen({ puzzle, cards, results, meta, onNext }) {
                 </div>
               </details>
             </>}
+
+            {restEntries.length > 0 && (
+              <details className="pool restpool">
+                <summary>The rest of your pool ({restEntries.length}) — cards you drafted they didn't maindeck</summary>
+                <DeckView entries={restEntries} cards={cards} />
+              </details>
+            )}
           </>
         )
       })()}

@@ -134,8 +134,10 @@ button.next:hover { background: #3a64ad; }
 .deck-legend .swatch.missed { border: 2px solid var(--red); box-shadow: 0 0 6px rgba(248, 81, 73, .6); }
 .deck-legend .swatch.swap { border: 2px solid var(--swap); box-shadow: 0 0 6px rgba(88, 166, 255, .6); }
 
-.swaps summary { color: var(--muted); font-size: .9em; cursor: pointer; margin: 18px 0 8px; text-align: center; }
-.swaps summary:hover { color: var(--text); }
+.deck-note { color: var(--muted); font-size: .82em; font-style: italic; max-width: 620px; margin: 4px auto 0; }
+
+.swaps summary, .restpool summary { color: var(--muted); font-size: .9em; cursor: pointer; margin: 18px 0 8px; text-align: center; }
+.swaps summary:hover, .restpool summary:hover { color: var(--text); }
 .swap-list { display: flex; flex-direction: column; gap: 7px; max-width: 540px; margin: 0 auto; }
 .swap-row { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 12px; }
 .swap-row .side { display: flex; align-items: center; gap: 8px; min-width: 0; }
