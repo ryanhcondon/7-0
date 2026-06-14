@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import Game from './Game.jsx'
+import QuickGame from './QuickGame.jsx'
 import Archive from './Archive.jsx'
 import About from './About.jsx'
 import { allProgress, todayISO, currentStreak } from './storage.js'
@@ -13,6 +14,7 @@ export default function App() {
   const [puzzleId, setPuzzleId] = useState(null)
   const [puzzle, setPuzzle] = useState(null)
   const [view, setView] = useState('play') // play | archive | about
+  const [mode, setMode] = useState('daily') // daily | quick
   const [progress, setProgress] = useState(() => allProgress())
   const [error, setError] = useState(null)
 
@@ -47,12 +49,14 @@ export default function App() {
   }, [puzzleId])
 
   if (error) return <div className="app"><div className="error">⚠️ {error}</div></div>
-  if (!manifest || !cards || (view === 'play' && !puzzle)) {
+  const needPuzzle = view === 'play' && mode === 'daily'
+  if (!manifest || !cards || (needPuzzle && !puzzle)) {
     return <div className="app"><div className="loading">Loading…</div></div>
   }
 
   const days = manifest.days
   const dayIds = days[date] ?? []
+  const allIds = [...new Set(Object.values(days).flat())]
   const streak = currentStreak(days, progress, today)
   const nextUnfinished = dayIds.find(id => id !== puzzleId && !progress[id]?.done)
 
@@ -66,8 +70,8 @@ export default function App() {
     <div className="app">
       <header className="topbar">
         <h1>7-0</h1>
-        <span className="topbar-date">{date}</span>
-        {view === 'play' && (
+        {mode === 'daily' && <span className="topbar-date">{date}</span>}
+        {view === 'play' && mode === 'daily' && (
           <div className="puzzle-tabs">
             {dayIds.map((id, idx) => {
               const p = progress[id]
@@ -85,6 +89,14 @@ export default function App() {
         )}
         <nav className="topnav">
           {streak > 1 && <span className="streak" title="day streak">🔥 {streak}</span>}
+          <button
+            className={mode === 'daily' && view === 'play' ? 'navlink active' : 'navlink'}
+            onClick={() => { setMode('daily'); setView('play') }}
+          >Daily</button>
+          <button
+            className={mode === 'quick' && view === 'play' ? 'navlink active' : 'navlink'}
+            onClick={() => { setMode('quick'); setView('play') }}
+          >Quick</button>
           <button className="navlink" onClick={() => setView(view === 'archive' ? 'play' : 'archive')}>Archive</button>
           <button className="navlink" onClick={() => setView(view === 'about' ? 'play' : 'about')}>About</button>
         </nav>
@@ -94,7 +106,10 @@ export default function App() {
       {view === 'archive' && (
         <Archive days={days} progress={progress} today={today} onPick={openPuzzle} onBack={() => setView('play')} />
       )}
-      {view === 'play' && (
+      {view === 'play' && mode === 'quick' && (
+        <QuickGame cards={cards} allIds={allIds} />
+      )}
+      {view === 'play' && mode === 'daily' && (
         <Game
           key={puzzle.id}
           puzzle={puzzle}

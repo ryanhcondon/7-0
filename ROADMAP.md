@@ -286,3 +286,22 @@ Open: none blocking. (v2 ideas tracked in Phase 5.)
   (key trophyPick.v1) at finish time — old saves show old scores; play a fresh
   puzzle or clear site data to see scoring changes. When eval-driving the UI,
   re-query buttons after each click (header remounts on puzzle/tab switch).
+- 2026-06-14 (session 4b): NEW "Quick" mode (web/src/QuickGame.jsx) — a
+  compressed best-of run a la 82-0/Six Rings, living in parallel with Daily.
+  Nine-slot position ladder (P1P1, P1 early/mid/late, P2P1, P2 early/late,
+  P3 early/late = exactly the longest possible 7-2 run); each slot draws a real
+  pick from a trophy draft at that stage out of the existing 123 static puzzle
+  JSONs (reused, no new pipeline). Match=win, miss=loss (binary, per Ryan);
+  run ends at 7 wins or 3 losses. Toggle: "Mixed drafts" (each round a different
+  drafter — format snapshot) vs "One draft" (all picks from one drafter, pool
+  grows coherently). Shows that drafter's real pool-so-far for context. Endless
+  (Play again / flip toggle); no localStorage/streak persistence for Quick yet.
+  App.jsx gained a mode toggle (daily|quick) in the nav; Daily path unchanged.
+  End screen = record + emoji grid + per-round recap + share. Verified full
+  loop in preview (rounds advance 1:1, pips/W-L correct, ends at 3rd loss, all
+  three end-screen actions + reset work). Built on the SAME static public
+  dataset as Daily, so it ships under the existing "built on 17L public data"
+  framing — independent of the pending 17lands live-data ask (see memory
+  [[17lands-live-endpoints]]). Committed; NOT yet pushed/deployed pending Ryan
+  playtest. Possible follow-ups: per-round partial-credit flavor, best-record
+  persistence, share grid polish, intro/explainer copy for the mode.
