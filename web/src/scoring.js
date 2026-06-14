@@ -24,14 +24,23 @@ export function totalScore(points, totalPicks) {
   return Math.round((sum / totalPicks) * 100)
 }
 
-// Map your point fraction onto a simulated Premier Draft record (stop at 3
-// losses or 7 wins), linearly over the 10 possible outcomes, capped at the
-// drafter's real record — you can't out-pilot the person who drafted the deck.
+// Map your score fraction (points / picks, partial credit included) onto a
+// simulated Premier Draft record. Deliberately demanding — anchored to:
+//   frac < 0.50  -> 0-3   (matched well under half)
+//   frac ~ 0.90  -> 7-2
+//   frac >= 0.95 -> 7-0   (near-perfect agreement)
+// linearly interpolated between those anchors, then capped at the drafter's
+// real record (you can't out-finish the deck's pilot).
 export const RECORD_LADDER = ['0-3', '1-3', '2-3', '3-3', '4-3', '5-3', '6-3', '7-2', '7-1', '7-0']
 
 export function draftRecord(points, totalPicks, theirRecord) {
   const frac = totalPicks ? points.reduce((a, b) => a + b, 0) / totalPicks : 0
-  let idx = Math.min(RECORD_LADDER.length - 1, Math.floor(frac * RECORD_LADDER.length))
+  let idx
+  if (frac < 0.50) idx = 0                                          // 0-3
+  else if (frac < 0.90) idx = Math.round(((frac - 0.50) / 0.40) * 7) // 0-3 .. 7-2
+  else if (frac < 0.95) idx = 7 + Math.round(((frac - 0.90) / 0.05) * 2) // 7-2 .. 7-0
+  else idx = 9                                                       // 7-0
+  idx = Math.max(0, Math.min(RECORD_LADDER.length - 1, idx))
   const cap = RECORD_LADDER.indexOf(theirRecord)
   if (cap !== -1) idx = Math.min(idx, cap)
   return RECORD_LADDER[idx]

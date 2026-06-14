@@ -92,6 +92,7 @@ button.next:hover { background: #3a64ad; }
 .record-headline { margin: 24px 0 8px; }
 .record-label { color: var(--muted); font-size: 1.1em; }
 .record { font-size: 4em; font-weight: 800; line-height: 1.1; }
+.record-note { color: var(--muted); font-style: italic; font-size: .9em; max-width: 440px; margin: 6px auto 0; }
 .end-stats { display: flex; justify-content: center; gap: 36px; margin: 20px 0; flex-wrap: wrap; }
 .end-stat .big { font-size: 2.2em; font-weight: 700; }
 .end-stat .label { color: var(--muted); }

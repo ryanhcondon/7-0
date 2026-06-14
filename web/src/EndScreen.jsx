@@ -97,6 +97,7 @@ export default function EndScreen({ puzzle, cards, results, meta, onNext }) {
       <div className="record-headline">
         <div className="record-label">You went</div>
         <div className="record">{record.replace('-', '–')}</div>
+        <div className="record-note">…if draft records were based on how well you matched someone else's picks 😉</div>
       </div>
       <div className="end-stats">
         <div className="end-stat">
