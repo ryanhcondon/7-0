@@ -37,7 +37,7 @@ function sample(arr, n) {
 
 const puzzleCache = {}
 function fetchPuzzle(id) {
-  puzzleCache[id] ??= fetch(`puzzles/${id}.json`).then(r => r.json())
+  puzzleCache[id] ??= fetch(`/puzzles/${id}.json`).then(r => r.json())
   return puzzleCache[id]
 }
 

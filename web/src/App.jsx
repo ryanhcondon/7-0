@@ -1,3 +1,5 @@
+'use client'
+
 import { useEffect, useState } from 'react'
 import Game from './Game.jsx'
 import QuickGame from './QuickGame.jsx'
@@ -22,8 +24,8 @@ export default function App() {
 
   useEffect(() => {
     Promise.all([
-      fetch('cards.SOS.json').then(r => r.json()),
-      fetch('puzzles/manifest.json').then(r => r.json()),
+      fetch('/cards.SOS.json').then(r => r.json()),
+      fetch('/puzzles/manifest.json').then(r => r.json()),
     ])
       .then(([cardData, manifestData]) => {
         setCards(cardData)
@@ -42,7 +44,7 @@ export default function App() {
   useEffect(() => {
     if (!puzzleId) return
     setPuzzle(null)
-    fetch(`puzzles/${puzzleId}.json`)
+    fetch(`/puzzles/${puzzleId}.json`)
       .then(r => r.json())
       .then(setPuzzle)
       .catch(e => setError(`Couldn't load puzzle ${puzzleId} (${e.message}).`))
