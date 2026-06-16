@@ -161,14 +161,14 @@ cards, analytics, and linkable games — which is why the IA restructure comes f
       shown "coming soon". NOTE: `/draft/[id]` generic player deferred to PP4 (built
       when a real source — random/paste — feeds it ids).
 - [~] PP2 — cutover + shareable URL + analytics.
-  - [x] CUTOVER (2026-06-15): Vercel is now the real production. Stable prod URL =
-        **https://7-0-mauve.vercel.app** (serves the Next app; verified). Merged
-        `nextjs-migration` → `main` (fast-forward) and DELETED
-        `.github/workflows/deploy.yml`, so there's one pipeline (push → Vercel) and
-        main is the source of truth. RYAN dashboard step: switch Vercel Production
-        Branch back to `main`. Old GitHub Pages site (ryanhcondon.github.io/7-0) now
-        orphaned/stale — optionally unpublish it (repo Settings → Pages → source None)
-        or leave it; canonical link is the Vercel URL.
+  - [x] CUTOVER COMPLETE (2026-06-15): Vercel is the real production. Canonical prod
+        URL = **https://7-0-mauve.vercel.app** (Next app; verified). Merged
+        `nextjs-migration` → `main` (fast-forward), DELETED
+        `.github/workflows/deploy.yml`. Vercel **Production Branch = `main`** (Ryan
+        switched it; confirmed a push to main auto-deploys to prod via a theme-color
+        marker that appeared live in ~30s). Old GitHub Pages site unpublished → 404.
+        `nextjs-migration` branch DELETED (local + remote). One branch (`main`), one
+        pipeline: **commit to main → push → live.** Work happens on `main` now.
   - [ ] Nicer share link via a FREE link shortener (paid custom domain deferred;
         name stays **7-0**).
   - [ ] Lightweight traffic analytics — no login required.
