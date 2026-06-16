@@ -125,13 +125,56 @@ Ryan is on the Pro plan with real token limits and uses these two conventions:
         that play dates are evergreen-mapped; revisit if v2 does live
         "yesterday's trophies" via 17lands trophy-page scrape)
   - [ ] Live at ryanhcondon.github.io/<repo>; custom domain optional later
-- [ ] Phase 5 (v2, after feedback) — upload-your-own-draft mode, beat-the-bot,
-      multi-set, live community pick stats (needs tiny backend)
+### Platform pivot (v2) — from static SPA to a real platform
+
+Full rationale in memory [[architecture-direction]] and [[17lands-live-endpoints]].
+The original "Phase 5 (v2)" list (upload-your-own-draft, beat-the-bot, multi-set,
+live community pick stats) is folded into the phases below.
+
+GROUNDWORK (done — sessions 5–6, branch `nextjs-migration`):
+- [x] Frontend ported Vite→Next 15 App Router — pure port, no behavior change (2026-06-15)
+- [x] Vercel project live (Root Dir=`web`, Next preset, Deployment Protection OFF);
+      Production Branch switched main→`nextjs-migration`; deploys green (2026-06-15)
+- [x] 17lands proxy API routes + lib (`web/lib/*`, `web/app/api/{draft,deck,trophies}`),
+      gated behind LIVE_17LANDS_ENABLED (off by default); verified live — returns 503
+      when off, zero upstream traffic (2026-06-15)
+- [x] Supabase `drafts` cache table + service_role wired; write/read/delete round-trip
+      VERIFIED against the real project (2026-06-15)
+
+Guiding model: **every playable thing gets a real URL.** Full Draft = ONE player at
+`/draft/[id]` fed by three sources — random recent trophy (→ `/draft/<id>`), pasted
+17lands link (parse id → `/draft/<id>`), auto-curated daily (→ `/draft/<todayId>`).
+Static puzzles and live drafts are both just "ids". Quick stays its own gamified mode
+(one-draft / mixed; room for more quick modes later). Real URLs are what unlock share
+cards, analytics, and linkable games — which is why the IA restructure comes first.
+
+- [ ] PP1 — IA & navigation **(NEXT — Ryan's #1 priority)**. Real Next routes
+      (`/`, `/quick`, `/draft/[id]`), homepage hub with the two paths (Full Draft /
+      Quick), back-to-home from end screens. Break the client `App.jsx` into route
+      segments. Fold paste-a-link in as a Full Draft source (UI built, flag-gated).
+      Auto-curated daily picks one draft automatically (random or light criteria);
+      admin-selection / user-voting from randomized drafts deferred.
+- [ ] PP2 — cutover + shareable URL + analytics. Make Vercel the public production,
+      retire `.github/workflows/deploy.yml` (GitHub Pages). Nicer share link via a
+      FREE link shortener for now (paid custom domain deferred; name stays **7-0**).
+      Add lightweight traffic analytics — no login required.
+- [ ] PP3 — dynamic social share cards per mode (`@vercel/og` + per-URL
+      `generateMetadata`). The viral hook. Depends on PP1's URLs. (Before PP2 cutover
+      is fine, but cutover ships first per Ryan.)
+- [ ] PP4 — live 17lands data ON. Flip LIVE_17LANDS_ENABLED (ONLY after 17lands grants
+      permission), wire random-trophy + pasted-link into Full Draft, run one live
+      end-to-end smoke test. Proxy already built; this is the switch + the entry points.
+- [ ] PP5 — accounts (deferred until traffic justifies — guardrail: don't build login
+      before there are users). Supabase auth, save progress to DB, account pages
+      (saved drafts, settings), localStorage→DB migration that MERGES existing local
+      progress. Design the schema now with that merge in mind.
 
 ## Decisions
 
 Made:
 - Fully static site, zero backend for v1. All stats precomputed offline.
+  [SUPERSEDED 2026-06-15 — platform pivot to Next.js/Vercel + Supabase; see the
+  Platform pivot phases above and the new decisions block below.]
 - Daily structure (Ryan, 2026-06-12, revised same day): 3 puzzles per day, all
   from one real draft day, with draft days mapped onto consecutive calendar
   days from launch (evergreen — works with the static dataset). Literal
@@ -149,7 +192,9 @@ Made:
   context-aware "what would a typical player pick here" credit, precomputed
   offline per puzzle (stays static, no backend).
 - Hosting: GitHub Pages on Ryan's account (ryanhcondon). No Cloudflare/Vercel —
-  one less account; static Pages is sufficient.
+  one less account; static Pages is sufficient. [SUPERSEDED 2026-06-15 — now
+  Next.js on Vercel + Supabase; GitHub Pages stays the public site only until the
+  PP2 cutover.]
 - Local-first: phases 1-3 run/playtest entirely on Ryan's machine.
 - Stack: Python pipeline → static JSON → React+Vite SPA.
 
@@ -160,7 +205,25 @@ Made (continued):
 - Scoring: partial credit for defensible picks via community pick rates
   (settled, stingy variant — see scoring decision above).
 
-Open: none blocking. (v2 ideas tracked in Phase 5.)
+Made (platform pivot, 2026-06-15):
+- Stack: **Next.js on Vercel** (frontend + API proxy + future OG share cards) +
+  **Supabase** (Postgres/auth/storage). Migrate in place; retire GitHub Pages at PP2.
+- **Navigation model:** two paths from home — Full Draft and Quick. Full Draft is one
+  player (`/draft/[id]`) with three sources (random trophy / pasted link / auto-daily);
+  Quick keeps one-draft + mixed modes. Everything playable gets a real URL.
+- **Sequencing:** IA/navigation first (PP1), then cutover (PP2), then share cards (PP3).
+  Build slowly, step by step (Ryan).
+- **Name stays 7-0.** The clunky Vercel URL is the pain point, not the name. Use a FREE
+  link shortener for a shareable link for now; defer buying a custom domain.
+- **Curated daily = automatic** for now (random or light criteria). Admin-picked daily
+  and/or user-voting from randomized drafts are later ideas, not v2-blocking.
+- **Analytics ≠ auth:** daily-traffic metrics come in PP2 with no login; real accounts
+  (PP5) are deferred until traffic justifies them.
+
+Open / decisions pending (non-blocking for PP1):
+- Which free link shortener + exact shareable slug (PP2).
+- "Light criteria" for auto-daily selection, if not pure random (PP1).
+- Share-card visual design per mode (PP3).
 
 ## Key facts
 
@@ -328,3 +391,24 @@ Open: none blocking. (v2 ideas tracked in Phase 5.)
   accounts. Cutover (branch→main, retire deploy.yml, Vercel=prod) happens after
   the live demo is solid. Gotcha: dev now = `next dev` on :5173 (launch config
   "game-dev" unchanged); Vercel preview URL changes per deploy.
+- 2026-06-15 (session 6): Built + verified the 17lands proxy BACKEND and locked in
+  a structured platform roadmap (see status board "Platform pivot" + new decisions).
+  Shipped (committed 0a533c7, pushed, deployed as Vercel production from
+  `nextjs-migration`): `web/lib/{config,supabase,seventeenlands}.js`,
+  `web/app/api/{draft/[id],deck/[id],trophies}/route.js`, `web/app/api/_lib/respond.js`,
+  `web/.env.local.example`; added `@supabase/supabase-js`. All live calls gated by
+  LIVE_17LANDS_ENABLED (off) with a descriptive User-Agent (site URL + email).
+  VERIFIED on the live deploy: `/api/draft/test` + `/api/trophies` return 503 (kill
+  switch holds, no 17lands traffic), home 200, publicly reachable. Supabase CONFIRMED
+  via a real write/read/delete round-trip (table exists, service_role valid). Ryan did
+  the manual setup: service_role into web/.env.local + Vercel env, `drafts` table SQL,
+  Production Branch→`nextjs-migration`. Vercel gotchas learned: (1) "No Next.js version
+  detected" = it was building `main` (still the Vite app) under the Next preset — fix
+  was pointing Production Branch at the migration branch; (2) "Redeploy" rebuilds the
+  CLICKED deployment's commit/branch, so it kept pulling main — a fresh `git push` to
+  the branch is what actually deploys it. NEXT SESSION = **PP1 (IA & navigation)**:
+  real routes `/`, `/quick`, `/draft/[id]`, homepage hub (Full Draft vs Quick),
+  back-to-home, split client `App.jsx` into route segments, fold paste-a-link in as a
+  Full Draft source (flag-gated), auto-curated daily. Live current deploy:
+  https://7-0-d0p0lyfea-ryanhcondons-projects.vercel.app (URL changes per deploy until
+  PP2 shortener/cutover). Public site is STILL GitHub Pages until PP2.
