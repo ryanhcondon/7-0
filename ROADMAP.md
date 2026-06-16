@@ -169,9 +169,10 @@ cards, analytics, and linkable games — which is why the IA restructure comes f
         marker that appeared live in ~30s). Old GitHub Pages site unpublished → 404.
         `nextjs-migration` branch DELETED (local + remote). One branch (`main`), one
         pipeline: **commit to main → push → live.** Work happens on `main` now.
-  - [ ] Nicer share link via a FREE link shortener (paid custom domain deferred;
-        name stays **7-0**).
-  - [ ] Lightweight traffic analytics — no login required.
+  - [x] Shareable link — DROPPED (Ryan, 2026-06-15): the stable prod alias
+        **https://7-0-mauve.vercel.app** is short/clean enough; no link shortener
+        needed. A paid custom domain stays a someday option, not now.
+  - [ ] Lightweight traffic analytics — no login required. DEFERRED (later, not now).
 - [ ] PP3 — dynamic social share cards per mode (`@vercel/og` + per-URL
       `generateMetadata`). The viral hook. Depends on PP1's URLs. (Before PP2 cutover
       is fine, but cutover ships first per Ryan.)
@@ -227,8 +228,9 @@ Made (platform pivot, 2026-06-15):
   Quick keeps one-draft + mixed modes. Everything playable gets a real URL.
 - **Sequencing:** IA/navigation first (PP1), then cutover (PP2), then share cards (PP3).
   Build slowly, step by step (Ryan).
-- **Name stays 7-0.** The clunky Vercel URL is the pain point, not the name. Use a FREE
-  link shortener for a shareable link for now; defer buying a custom domain.
+- **Name stays 7-0.** Canonical URL = the stable Vercel prod alias
+  **https://7-0-mauve.vercel.app** — short/clean enough, so NO link shortener (Ryan,
+  2026-06-15 reversed the earlier "use a shortener" call). Custom domain = someday, not now.
 - **Curated daily = automatic** for now (random or light criteria). Admin-picked daily
   and/or user-voting from randomized drafts are later ideas, not v2-blocking.
 - **Analytics ≠ auth:** daily-traffic metrics come in PP2 with no login; real accounts
@@ -443,3 +445,16 @@ Open / decisions pending (non-blocking for PP1):
   `rm -rf .next` while `next dev` is running — it corrupts the live server (issue
   overlay); stop the preview server first, then clean. NEXT = PP2 (cutover + free link
   shortener + analytics) OR PP3 (share cards) — both now unblocked by the real URLs.
+- 2026-06-15 (session 6, cont. — PP2 CUTOVER DONE, session wrap): Cut over to Vercel
+  as the sole production. Merged `nextjs-migration`→`main` (ff), deleted the GitHub
+  Pages workflow, Ryan set Vercel Production Branch=`main` + unpublished Pages (now
+  404); confirmed main→prod deploy works (theme-color marker live in ~30s); deleted
+  the `nextjs-migration` branch (local+remote). **ONE branch (`main`), one pipeline:
+  commit to main → push → live. Canonical URL = https://7-0-mauve.vercel.app.** PP2
+  link shortener DROPPED (stable alias is clean enough) and analytics DEFERRED — so
+  PP2 is effectively closed bar later analytics. Everything committed + pushed; tree
+  clean; on `main`. NEXT SESSION = **PP3 dynamic social share cards** (its own session
+  — taste-heavy, expect lots of back-and-forth on design). Start: pick which surfaces
+  get cards (daily result, quick result, a shared /draft) and the visual design, then
+  build via `@vercel/og` + per-URL `generateMetadata`. Reminder: every mode now has a
+  real URL to attach cards to. Dev = `next dev` on :5173 (launch config "game-dev").
