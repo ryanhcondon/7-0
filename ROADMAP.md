@@ -148,12 +148,18 @@ Static puzzles and live drafts are both just "ids". Quick stays its own gamified
 (one-draft / mixed; room for more quick modes later). Real URLs are what unlock share
 cards, analytics, and linkable games — which is why the IA restructure comes first.
 
-- [ ] PP1 — IA & navigation **(NEXT — Ryan's #1 priority)**. Real Next routes
-      (`/`, `/quick`, `/draft/[id]`), homepage hub with the two paths (Full Draft /
-      Quick), back-to-home from end screens. Break the client `App.jsx` into route
-      segments. Fold paste-a-link in as a Full Draft source (UI built, flag-gated).
-      Auto-curated daily picks one draft automatically (random or light criteria);
-      admin-selection / user-voting from randomized drafts deferred.
+- [x] PP1 — IA & navigation (2026-06-15). Real Next routes (`/` hub, `/daily`,
+      `/quick`, `/draft` Full Draft hub, `/archive`, `/about`); persistent SiteHeader
+      in the layout (7-0 title links home = back-to-home everywhere). `App.jsx` split
+      into route segments + `Home`, `DailyGame`, `FullDraftHub`, shared `useGameData`
+      hook; `App.jsx` deleted. Daily kept AS-IS (3 puzzles/day + tabs + streak),
+      re-homed; Archive deep-links via `/daily?p=<id>`. Full Draft hub shows the live
+      daily source + Random/Paste-link as disabled "soon" (17lands gated). Verified:
+      next build green (10 routes), all routes render, no console errors, completed-
+      puzzle end-screen replay + localStorage progress preserved, responsive 1→2 col.
+      Decisions used: keep Daily as-is, home=two paths + featured daily, live sources
+      shown "coming soon". NOTE: `/draft/[id]` generic player deferred to PP4 (built
+      when a real source — random/paste — feeds it ids).
 - [ ] PP2 — cutover + shareable URL + analytics. Make Vercel the public production,
       retire `.github/workflows/deploy.yml` (GitHub Pages). Nicer share link via a
       FREE link shortener for now (paid custom domain deferred; name stays **7-0**).
@@ -412,3 +418,20 @@ Open / decisions pending (non-blocking for PP1):
   Full Draft source (flag-gated), auto-curated daily. Live current deploy:
   https://7-0-d0p0lyfea-ryanhcondons-projects.vercel.app (URL changes per deploy until
   PP2 shortener/cutover). Public site is STILL GitHub Pages until PP2.
+- 2026-06-15 (session 6, cont. — PP1 DONE): Restructured the single-page `App.jsx`
+  into real Next App Router routes — the IA spine PP3 share cards + analytics hang off.
+  New: `app/{page,daily,quick,draft,archive,about}/page.jsx`, `app/layout.jsx` now wraps
+  a persistent `src/SiteHeader.jsx` (7-0 title → home) around `<main>`; `src/Home.jsx`
+  (two paths + featured daily CTA), `src/DailyGame.jsx` (extracted daily wrapper, keeps
+  tabs+streak, accepts `?p=<id>`), `src/FullDraftHub.jsx` (daily live + Random/Paste
+  "soon"), `src/useGameData.js` (module-cached cards+manifest loader). Archive/About
+  re-homed with router nav; back labels → "← Home". `src/App.jsx` DELETED. CSS added
+  for hub/featured/path-card/source-card/daily-bar (responsive 1→2 col at 600px).
+  Decisions baked in (all Ryan's "recommended" picks): Daily stays as-is re-homed,
+  home = two paths + featured daily, live Full Draft sources shown disabled "coming
+  soon". Verified in preview: build green (10 routes), every route renders, archive
+  chip deep-links to `/daily?p=id`, completed puzzles still replay their end screen
+  (localStorage intact through the restructure), zero console errors. GOTCHA: don't
+  `rm -rf .next` while `next dev` is running — it corrupts the live server (issue
+  overlay); stop the preview server first, then clean. NEXT = PP2 (cutover + free link
+  shortener + analytics) OR PP3 (share cards) — both now unblocked by the real URLs.

@@ -25,7 +25,7 @@ export default function Archive({ days, progress, today, onPick, onBack }) {
           </div>
         ))}
       </div>
-      <button className="next" onClick={onBack}>← Back to today</button>
+      <button className="next" onClick={onBack}>← Home</button>
     </div>
   )
 }

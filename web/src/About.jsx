@@ -27,7 +27,7 @@ export default function About({ onBack }) {
         </a>. Not approved or endorsed by Wizards. Portions of the materials
         used are property of Wizards of the Coast. © Wizards of the Coast LLC.
       </p>
-      <button className="next" onClick={onBack}>← Back to today</button>
+      <button className="next" onClick={onBack}>← Home</button>
     </div>
   )
 }

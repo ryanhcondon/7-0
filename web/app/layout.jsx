@@ -1,4 +1,5 @@
 import '../src/styles.css'
+import SiteHeader from '../src/SiteHeader.jsx'
 
 export const metadata = {
   title: '7-0 — daily MTG trophy draft game',
@@ -15,7 +16,10 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body>
-        <div id="root">{children}</div>
+        <div className="app">
+          <SiteHeader />
+          <main>{children}</main>
+        </div>
       </body>
     </html>
   )

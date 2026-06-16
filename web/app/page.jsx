@@ -1,5 +1,5 @@
-import App from '../src/App.jsx'
+import Home from '../src/Home.jsx'
 
 export default function Page() {
-  return <App />
+  return <Home />
 }
