@@ -160,10 +160,18 @@ cards, analytics, and linkable games — which is why the IA restructure comes f
       Decisions used: keep Daily as-is, home=two paths + featured daily, live sources
       shown "coming soon". NOTE: `/draft/[id]` generic player deferred to PP4 (built
       when a real source — random/paste — feeds it ids).
-- [ ] PP2 — cutover + shareable URL + analytics. Make Vercel the public production,
-      retire `.github/workflows/deploy.yml` (GitHub Pages). Nicer share link via a
-      FREE link shortener for now (paid custom domain deferred; name stays **7-0**).
-      Add lightweight traffic analytics — no login required.
+- [~] PP2 — cutover + shareable URL + analytics.
+  - [x] CUTOVER (2026-06-15): Vercel is now the real production. Stable prod URL =
+        **https://7-0-mauve.vercel.app** (serves the Next app; verified). Merged
+        `nextjs-migration` → `main` (fast-forward) and DELETED
+        `.github/workflows/deploy.yml`, so there's one pipeline (push → Vercel) and
+        main is the source of truth. RYAN dashboard step: switch Vercel Production
+        Branch back to `main`. Old GitHub Pages site (ryanhcondon.github.io/7-0) now
+        orphaned/stale — optionally unpublish it (repo Settings → Pages → source None)
+        or leave it; canonical link is the Vercel URL.
+  - [ ] Nicer share link via a FREE link shortener (paid custom domain deferred;
+        name stays **7-0**).
+  - [ ] Lightweight traffic analytics — no login required.
 - [ ] PP3 — dynamic social share cards per mode (`@vercel/og` + per-URL
       `generateMetadata`). The viral hook. Depends on PP1's URLs. (Before PP2 cutover
       is fine, but cutover ships first per Ryan.)
