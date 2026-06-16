@@ -308,3 +308,23 @@ Open: none blocking. (v2 ideas tracked in Phase 5.)
   [[17lands-live-endpoints]]). Committed; NOT yet pushed/deployed pending Ryan
   playtest. Possible follow-ups: per-round partial-credit flavor, best-record
   persistence, share grid polish, intro/explainer copy for the mode.
+- 2026-06-15 (session 5): BIG PIVOT — going from static prototype to a real
+  platform for the full vision (thousands of DAU, live 17lands data, logins,
+  user-submitted drafts, dynamic social share cards). Full rationale + plan in
+  memory [[architecture-direction]] and [[17lands-live-endpoints]] (READ BOTH
+  to resume). Decisions: stack = Next.js/Vercel (frontend + API proxy + future
+  OG share cards) + Supabase (Postgres/auth/storage). 17lands gave a near-yes
+  (traffic is their only concern); the 3 needed endpoints are confirmed working
+  and named in memory. Quick-mode work from session 4b WAS pushed + deployed to
+  the GitHub Pages site earlier this session (still the live prod site).
+  DONE this session: migrated frontend Vite→Next 15 (App Router) on branch
+  `nextjs-migration` (pushed, NOT merged; GitHub Pages/main untouched & still
+  live). App kept in web/; Vercel project configured (Root Directory=web,
+  Framework=Next.js, Deployment Protection OFF). Preview deploy verified public
+  + playtested — both modes identical, no behavior change. THIS IS A PURE PORT.
+  RESUME HERE next session: build the 17lands proxy API routes + Supabase cache
+  + paste-a-link live feature — exact step-by-step build plan is in memory
+  [[architecture-direction]] under "TO RESUME". Then dynamic share cards, then
+  accounts. Cutover (branch→main, retire deploy.yml, Vercel=prod) happens after
+  the live demo is solid. Gotcha: dev now = `next dev` on :5173 (launch config
+  "game-dev" unchanged); Vercel preview URL changes per deploy.
